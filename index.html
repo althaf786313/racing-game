@@ -1,0 +1,1740 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>ROAD RASH: RETRO COMBAT RACING</title>
+    <!-- Three.js CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <style>
+        * {
+            box-sizing: border-box;
+            user-select: none;
+            -webkit-user-select: none;
+            margin: 0;
+            padding: 0;
+        }
+        body, html {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background-color: #050505;
+            font-family: 'Impact', 'Arial Black', -apple-system, BlinkMacSystemFont, sans-serif;
+            color: #fff;
+        }
+        #game-container {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+        canvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+
+        /* 90s CRT & Grunge Overlays */
+        .scanlines {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%);
+            background-size: 100% 4px;
+            pointer-events: none;
+            z-index: 10;
+            opacity: 0.6;
+        }
+        .vignette {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            box-shadow: inset 0 0 100px rgba(0,0,0,0.85);
+            pointer-events: none;
+            z-index: 11;
+        }
+        .speed-lines {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: 12;
+            opacity: 0;
+            transition: opacity 0.2s;
+            background: radial-gradient(circle, transparent 60%, rgba(255, 255, 255, 0.2) 90%, rgba(255, 200, 0, 0.4) 100%);
+        }
+
+        /* HUD STYLING */
+        #hud {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: 20;
+            display: none;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 16px;
+        }
+        .hud-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 15px;
+        }
+        .hud-card {
+            background: rgba(10, 10, 15, 0.85);
+            border: 3px solid #ff2a2a;
+            border-radius: 6px;
+            padding: 8px 14px;
+            box-shadow: 4px 4px 0px #000, inset 0 0 10px rgba(255, 42, 42, 0.3);
+            text-transform: uppercase;
+        }
+        .hud-pos {
+            font-size: 32px;
+            color: #ffe600;
+            text-shadow: 2px 2px 0 #000, -1px -1px 0 #ff0044;
+            letter-spacing: 1px;
+        }
+        .hud-pos small {
+            font-size: 16px;
+            color: #fff;
+        }
+        .bar-container {
+            width: 180px;
+            margin-top: 4px;
+        }
+        .bar-label {
+            font-size: 11px;
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 2px;
+            letter-spacing: 1px;
+        }
+        .bar-bg {
+            height: 12px;
+            background: #222;
+            border: 2px solid #555;
+            border-radius: 3px;
+            overflow: hidden;
+            position: relative;
+        }
+        .bar-fill {
+            height: 100%;
+            width: 100%;
+            transition: width 0.15s ease-out;
+        }
+        .health-fill {
+            background: linear-gradient(90deg, #ff0044, #00ff66);
+        }
+        .nitro-fill {
+            background: linear-gradient(90deg, #0088ff, #00ffff);
+            width: 100%;
+        }
+        .opponent-card {
+            min-width: 180px;
+            border-color: #ffe600;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        .opponent-card.active {
+            opacity: 1;
+        }
+
+        .hud-center-alert {
+            position: absolute;
+            top: 25%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 42px;
+            color: #ff0055;
+            text-shadow: 3px 3px 0 #000, -2px -2px 0 #fff;
+            opacity: 0;
+            transition: opacity 0.2s, transform 0.2s;
+            pointer-events: none;
+            text-align: center;
+            white-space: nowrap;
+        }
+
+        .hud-bottom {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+        }
+        .speed-gauge {
+            text-align: right;
+        }
+        .speed-val {
+            font-size: 48px;
+            font-family: monospace;
+            font-weight: 900;
+            line-height: 1;
+            color: #00ffcc;
+            text-shadow: 0 0 10px rgba(0, 255, 204, 0.6);
+        }
+        .speed-unit {
+            font-size: 14px;
+            color: #aaa;
+            letter-spacing: 2px;
+        }
+        .distance-progress {
+            width: 240px;
+        }
+        .progress-bar-bg {
+            height: 14px;
+            background: #111;
+            border: 2px solid #ffe600;
+            border-radius: 7px;
+            overflow: hidden;
+            position: relative;
+        }
+        .progress-bar-fill {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, #ff0055, #ffe600);
+        }
+
+        /* SCREENS & MENUS */
+        .screen-overlay {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(circle at center, rgba(30, 10, 20, 0.85) 0%, rgba(5, 5, 5, 0.96) 80%);
+            z-index: 50;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            text-align: center;
+        }
+        .logo-title {
+            font-size: clamp(48px, 9vw, 92px);
+            font-style: italic;
+            text-transform: uppercase;
+            font-weight: 900;
+            color: #ffe600;
+            text-shadow: 4px 4px 0 #ff0044, 8px 8px 0 #000, 0 0 30px rgba(255, 230, 0, 0.5);
+            letter-spacing: -2px;
+            transform: skew(-6deg);
+            margin-bottom: 6px;
+            line-height: 0.95;
+        }
+        .logo-sub {
+            font-size: clamp(16px, 3vw, 24px);
+            color: #00f0ff;
+            letter-spacing: 6px;
+            text-shadow: 2px 2px 0 #000;
+            margin-bottom: 24px;
+            text-transform: uppercase;
+        }
+        .instructions-box {
+            background: rgba(0, 0, 0, 0.8);
+            border: 2px solid #555;
+            border-left: 6px solid #ff0055;
+            padding: 16px 24px;
+            border-radius: 4px;
+            max-width: 550px;
+            margin-bottom: 25px;
+            text-align: left;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            font-size: 14px;
+            line-height: 1.6;
+            color: #ddd;
+        }
+        .key-badge {
+            background: #252525;
+            border: 1px solid #777;
+            padding: 2px 7px;
+            border-radius: 4px;
+            color: #ffe600;
+            font-weight: bold;
+            font-family: monospace;
+            box-shadow: 1px 1px 0 #000;
+        }
+        .btn-action {
+            background: linear-gradient(180deg, #ff2a2a, #b30024);
+            border: 3px solid #ffe600;
+            color: #fff;
+            font-family: 'Impact', sans-serif;
+            font-size: 28px;
+            padding: 12px 42px;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            box-shadow: 0 6px 0 #500, 0 10px 20px rgba(0, 0, 0, 0.6);
+            transform: skew(-4deg);
+            transition: all 0.1s;
+            outline: none;
+            pointer-events: all;
+        }
+        .btn-action:hover {
+            background: linear-gradient(180deg, #ff4d4d, #d1002a);
+            transform: skew(-4deg) translateY(-2px);
+            box-shadow: 0 8px 0 #500, 0 14px 24px rgba(255, 0, 68, 0.4);
+        }
+        .btn-action:active {
+            transform: skew(-4deg) translateY(4px);
+            box-shadow: 0 2px 0 #500;
+        }
+
+        /* MOBILE ON-SCREEN CONTROLS */
+        #mobile-controls {
+            position: absolute;
+            bottom: 15px;
+            left: 0;
+            width: 100%;
+            height: 160px;
+            z-index: 30;
+            pointer-events: none;
+            display: none;
+            justify-content: space-between;
+            padding: 0 20px;
+            box-sizing: border-box;
+        }
+        .touch-group {
+            display: flex;
+            gap: 12px;
+            pointer-events: auto;
+            align-items: center;
+        }
+        .touch-btn {
+            width: 65px;
+            height: 65px;
+            border-radius: 50%;
+            background: rgba(20, 20, 25, 0.85);
+            border: 3px solid #fff;
+            color: #fff;
+            font-size: 20px;
+            font-weight: 900;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.6);
+            touch-action: manipulation;
+        }
+        .touch-btn:active {
+            background: #ffe600;
+            color: #000;
+            transform: scale(0.92);
+        }
+        .btn-punch-l { border-color: #ff0055; background: rgba(255, 0, 85, 0.3); }
+        .btn-punch-r { border-color: #00f0ff; background: rgba(0, 240, 255, 0.3); }
+        .btn-nitro { border-color: #ffe600; background: rgba(255, 230, 0, 0.3); font-size: 13px; }
+
+        /* WRECKED FLASH */
+        #flash-overlay {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: red;
+            opacity: 0;
+            pointer-events: none;
+            z-index: 40;
+            transition: opacity 0.08s;
+        }
+
+        /* REAR MIRROR */
+        #rear-mirror {
+            width: 130px;
+            height: 38px;
+            border: 2px solid #666;
+            background: #080810;
+            border-radius: 4px;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 9px;
+            color: #777;
+            letter-spacing: 1px;
+        }
+        #rear-mirror .radar-dot {
+            position: absolute;
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        /* Audio enable notice */
+        .sound-toggle {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            z-index: 100;
+            background: rgba(0,0,0,0.6);
+            border: 1px solid #777;
+            color: #ffe600;
+            padding: 6px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 13px;
+            pointer-events: all;
+        }
+    </style>
+</head>
+<body>
+    <div id="game-container">
+        <!-- CRT Scanline & Shaders -->
+        <div class="scanlines"></div>
+        <div class="vignette"></div>
+        <div class="speed-lines" id="speedLines"></div>
+        <div id="flash-overlay"></div>
+
+        <!-- SOUND TOGGLE -->
+        <button id="soundToggle" class="sound-toggle">🔊 SOUND: ON</button>
+
+        <!-- GAME HUD -->
+        <div id="hud">
+            <div class="hud-top">
+                <!-- Player Status -->
+                <div class="hud-card">
+                    <div class="hud-pos"><span id="hudRank">1</span><small>/8</small></div>
+                    <div class="bar-container">
+                        <div class="bar-label"><span>HEALTH</span><span id="healthNum">100%</span></div>
+                        <div class="bar-bg"><div class="bar-fill health-fill" id="healthBar"></div></div>
+                    </div>
+                    <div class="bar-container" style="margin-top: 6px;">
+                        <div class="bar-label"><span style="color:#00ffff;">NITRO (SHIFT)</span><span id="nitroNum">100%</span></div>
+                        <div class="bar-bg"><div class="bar-fill nitro-fill" id="nitroBar"></div></div>
+                    </div>
+                </div>
+
+                <!-- Center Rear Mirror & Distance -->
+                <div style="display:flex; flex-direction:column; align-items:center; gap: 4px;">
+                    <div id="rear-mirror">
+                        <span>REAR VIEW</span>
+                        <div id="mirrorDots"></div>
+                    </div>
+                    <div class="hud-card distance-progress" style="padding: 6px 12px;">
+                        <div class="bar-label" style="font-size: 10px;">
+                            <span>COURSE PROGRESS</span>
+                            <span id="distNum">0%</span>
+                        </div>
+                        <div class="progress-bar-bg">
+                            <div class="progress-bar-fill" id="progressBar"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Opponent Target Locked -->
+                <div class="hud-card opponent-card" id="opponentCard">
+                    <div style="color: #ff0055; font-size: 14px; display:flex; justify-content:space-between;">
+                        <span id="oppName">VIPER</span>
+                        <span style="font-size:11px; color:#fff;" id="oppBikeType">SUZUKI GSX</span>
+                    </div>
+                    <div class="bar-container">
+                        <div class="bar-label"><span style="color:#ffe600;">STAMINA</span><span id="oppStamina">100%</span></div>
+                        <div class="bar-bg"><div class="bar-fill" style="background:#ff0055; width:100%;" id="oppBar"></div></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Big Combat Hit Banner -->
+            <div class="hud-center-alert" id="combatAlert">WHACK!</div>
+
+            <div class="hud-bottom">
+                <div class="hud-card" style="border-color:#555;">
+                    <div style="font-size:11px; color:#aaa;">PUNCH LEFT: <span class="key-badge">J</span> / <span class="key-badge">L-CLICK</span></div>
+                    <div style="font-size:11px; color:#aaa; margin-top:3px;">KICK RIGHT: <span class="key-badge">K</span> / <span class="key-badge">R-CLICK</span></div>
+                    <div style="font-size:11px; color:#00ffcc; margin-top:3px;">STEER: <span class="key-badge">A/D</span> OR <span class="key-badge">←/→</span></div>
+                </div>
+
+                <!-- Speedometer -->
+                <div class="hud-card speed-gauge">
+                    <div class="speed-val" id="speedVal">0</div>
+                    <div class="speed-unit">MPH</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- MOBILE TOUCH CONTROLS -->
+        <div id="mobile-controls">
+            <div class="touch-group">
+                <div class="touch-btn" id="mBtnLeft">◀</div>
+                <div class="touch-btn" id="mBtnRight">▶</div>
+            </div>
+            <div class="touch-group">
+                <div class="touch-btn btn-punch-l" id="mBtnPunchL">PUNCH</div>
+                <div class="touch-btn btn-nitro" id="mBtnNitro">NITRO</div>
+                <div class="touch-btn btn-punch-r" id="mBtnPunchR">KICK</div>
+                <div class="touch-btn" id="mBtnGas" style="border-color:#00ff66;">GAS</div>
+            </div>
+        </div>
+
+        <!-- START / MENU SCREEN -->
+        <div class="screen-overlay" id="startScreen">
+            <div class="logo-title">ROAD RASH</div>
+            <div class="logo-sub">OUTLAW COMBAT LEAGUE</div>
+            
+            <div class="instructions-box">
+                <p style="margin-bottom:8px;"><b style="color:#ffe600;">OBJECTIVE:</b> Reach the finish line alive in top 3. Beat down rival bikers who dare pass you and dodge highway traffic and police patrols!</p>
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:6px; margin-top:10px;">
+                    <div><span class="key-badge">W</span> / <span class="key-badge">↑</span> : Full Throttle</div>
+                    <div><span class="key-badge">S</span> / <span class="key-badge">↓</span> : Brake</div>
+                    <div><span class="key-badge">A</span> / <span class="key-badge">D</span> : Steer / Lean</div>
+                    <div><span class="key-badge">SHIFT</span> : Nitrous Boost</div>
+                    <div><span class="key-badge">J</span> / <span class="key-badge">Z</span> : Attack Left (Punch/Bat)</div>
+                    <div><span class="key-badge">K</span> / <span class="key-badge">X</span> : Attack Right (Heavy Kick)</div>
+                </div>
+                <p style="margin-top:10px; font-size:12px; color:#ff9999;">★ Knock opponents off their bikes to drain their positions! Beware the Highway Cop Officer Murphy!</p>
+            </div>
+
+            <button class="btn-action" id="startBtn">RACE NOW</button>
+        </div>
+
+        <!-- GAME OVER / FINISH SCREEN -->
+        <div class="screen-overlay" id="endScreen" style="display:none;">
+            <div class="logo-title" id="endTitle">WRECKED!</div>
+            <div class="logo-sub" id="endSubtitle">YOU ATE ASPHALT</div>
+
+            <div class="instructions-box" style="text-align:center;">
+                <p style="font-size:20px; color:#ffe600; margin-bottom:8px;">FINAL STANDING: <span id="finalRank">6th</span></p>
+                <p>Top Speed: <span id="finalSpeed" style="color:#00ffcc;">142 MPH</span></p>
+                <p>Bikers Knocked Down: <span id="finalKOs" style="color:#ff0055; font-weight:bold;">3</span></p>
+                <p>Damage Taken: <span id="finalDamage">85%</span></p>
+            </div>
+
+            <button class="btn-action" id="restartBtn">RACE AGAIN</button>
+        </div>
+    </div>
+
+    <!-- MAIN GAME SCRIPT -->
+    <script>
+    /* ==========================================================================
+       AUDIO SYNTHESIZER (No external audio files needed! Web Audio API)
+       ========================================================================== */
+    class SoundEngine {
+        constructor() {
+            this.ctx = null;
+            this.enabled = true;
+            this.engineOsc = null;
+            this.engineGain = null;
+            this.engineFilter = null;
+            this.noiseNode = null;
+            this.isMusicPlaying = false;
+        }
+
+        init() {
+            if (this.ctx) return;
+            const AudioContext = window.AudioContext || window.webkitAudioContext;
+            this.ctx = new AudioContext();
+
+            // Create Motorcycle Engine Synth
+            this.engineOsc = this.ctx.createOscillator();
+            this.engineOsc.type = 'sawtooth';
+
+            this.engineFilter = this.ctx.createBiquadFilter();
+            this.engineFilter.type = 'lowpass';
+            this.engineFilter.frequency.value = 400;
+
+            this.engineGain = this.ctx.createGain();
+            this.engineGain.gain.value = 0.0;
+
+            // Engine Rumble Sub
+            this.subOsc = this.ctx.createOscillator();
+            this.subOsc.type = 'triangle';
+            this.subGain = this.ctx.createGain();
+            this.subGain.gain.value = 0.0;
+
+            this.engineOsc.connect(this.engineFilter);
+            this.engineFilter.connect(this.engineGain);
+            this.engineGain.connect(this.ctx.destination);
+
+            this.subOsc.connect(this.subGain);
+            this.subGain.connect(this.ctx.destination);
+
+            this.engineOsc.start();
+            this.subOsc.start();
+        }
+
+        updateEngine(speedRatio, isAccelerating) {
+            if (!this.ctx || !this.enabled) return;
+            const now = this.ctx.currentTime;
+            const pitch = 45 + speedRatio * 160 + (isAccelerating ? 25 : 0);
+            this.engineOsc.frequency.setTargetAtTime(pitch, now, 0.05);
+            this.subOsc.frequency.setTargetAtTime(pitch * 0.5, now, 0.05);
+            this.engineFilter.frequency.setTargetAtTime(300 + speedRatio * 1800, now, 0.05);
+
+            const targetVol = 0.12 + speedRatio * 0.14 + (isAccelerating ? 0.08 : 0);
+            this.engineGain.gain.setTargetAtTime(targetVol, now, 0.05);
+            this.subGain.gain.setTargetAtTime(targetVol * 0.8, now, 0.05);
+        }
+
+        stopEngine() {
+            if (!this.ctx) return;
+            this.engineGain.gain.setTargetAtTime(0, this.ctx.currentTime, 0.1);
+            this.subGain.gain.setTargetAtTime(0, this.ctx.currentTime, 0.1);
+        }
+
+        playHit() {
+            if (!this.ctx || !this.enabled) return;
+            const now = this.ctx.currentTime;
+
+            // Low thump
+            const osc = this.ctx.createOscillator();
+            const gain = this.ctx.createGain();
+            osc.frequency.setValueAtTime(140, now);
+            osc.frequency.exponentialRampToValueAtTime(30, now + 0.15);
+            gain.gain.setValueAtTime(0.5, now);
+            gain.gain.exponentialRampToValueAtTime(0.01, now + 0.15);
+            osc.connect(gain);
+            gain.connect(this.ctx.destination);
+            osc.start();
+            osc.stop(now + 0.16);
+
+            // Punch snap noise
+            const bufferSize = this.ctx.sampleRate * 0.1;
+            const buffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
+            const data = buffer.getChannelData(0);
+            for (let i = 0; i < bufferSize; i++) data[i] = Math.random() * 2 - 1;
+            const noise = this.ctx.createBufferSource();
+            noise.buffer = buffer;
+            const nGain = this.ctx.createGain();
+            nGain.gain.setValueAtTime(0.4, now);
+            nGain.gain.exponentialRampToValueAtTime(0.01, now + 0.1);
+            noise.connect(nGain);
+            nGain.connect(this.ctx.destination);
+            noise.start();
+        }
+
+        playCrash() {
+            if (!this.ctx || !this.enabled) return;
+            const now = this.ctx.currentTime;
+            // Metal crash explosion
+            const dur = 0.8;
+            const bufferSize = this.ctx.sampleRate * dur;
+            const buffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
+            const data = buffer.getChannelData(0);
+            for (let i = 0; i < bufferSize; i++) data[i] = (Math.random() * 2 - 1) * Math.exp(-i / (bufferSize * 0.25));
+            const noise = this.ctx.createBufferSource();
+            noise.buffer = buffer;
+            const filter = this.ctx.createBiquadFilter();
+            filter.type = 'lowpass';
+            filter.frequency.setValueAtTime(1800, now);
+            filter.frequency.linearRampToValueAtTime(200, now + dur);
+            const gain = this.ctx.createGain();
+            gain.gain.setValueAtTime(0.8, now);
+            gain.gain.linearRampToValueAtTime(0.01, now + dur);
+            noise.connect(filter);
+            filter.connect(gain);
+            gain.connect(this.ctx.destination);
+            noise.start();
+        }
+
+        playNitro() {
+            if (!this.ctx || !this.enabled) return;
+            const now = this.ctx.currentTime;
+            const osc = this.ctx.createOscillator();
+            const gain = this.ctx.createGain();
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(300, now);
+            osc.frequency.exponentialRampToValueAtTime(1200, now + 0.4);
+            gain.gain.setValueAtTime(0.2, now);
+            gain.gain.linearRampToValueAtTime(0.01, now + 0.4);
+            osc.connect(gain);
+            gain.connect(this.ctx.destination);
+            osc.start();
+            osc.stop(now + 0.4);
+        }
+
+        playWhoosh() {
+            if (!this.ctx || !this.enabled) return;
+            const now = this.ctx.currentTime;
+            const osc = this.ctx.createOscillator();
+            const gain = this.ctx.createGain();
+            osc.frequency.setValueAtTime(450, now);
+            osc.frequency.exponentialRampToValueAtTime(120, now + 0.12);
+            gain.gain.setValueAtTime(0.2, now);
+            gain.gain.exponentialRampToValueAtTime(0.01, now + 0.12);
+            osc.connect(gain);
+            gain.connect(this.ctx.destination);
+            osc.start();
+            osc.stop(now + 0.13);
+        }
+
+        playSiren() {
+            if (!this.ctx || !this.enabled) return;
+            const now = this.ctx.currentTime;
+            const osc = this.ctx.createOscillator();
+            const gain = this.ctx.createGain();
+            osc.frequency.setValueAtTime(600, now);
+            osc.frequency.linearRampToValueAtTime(900, now + 0.25);
+            osc.frequency.linearRampToValueAtTime(600, now + 0.5);
+            gain.gain.setValueAtTime(0.15, now);
+            gain.gain.linearRampToValueAtTime(0.01, now + 0.5);
+            osc.connect(gain);
+            gain.connect(this.ctx.destination);
+            osc.start();
+            osc.stop(now + 0.5);
+        }
+    }
+
+    const audio = new SoundEngine();
+    document.getElementById('soundToggle').onclick = () => {
+        audio.enabled = !audio.enabled;
+        document.getElementById('soundToggle').innerText = audio.enabled ? "🔊 SOUND: ON" : "🔈 SOUND: OFF";
+        if (!audio.enabled) audio.stopEngine();
+    };
+
+    /* ==========================================================================
+       ROAD MATH & GENERATION
+       ========================================================================== */
+    const TRACK_LENGTH = 14000;
+    const ROAD_WIDTH = 14;
+
+    function getRoadData(z) {
+        // Continuous curving and rolling hills
+        const normZ = z % TRACK_LENGTH;
+        const x = Math.sin(normZ * 0.0018) * 55 + Math.sin(normZ * 0.0042) * 35;
+        const y = Math.sin(normZ * 0.0025) * 18 + Math.cos(normZ * 0.001) * 10;
+        
+        // Approximate tangent for facing direction
+        const dz = 1.0;
+        const nextX = Math.sin((normZ + dz) * 0.0018) * 55 + Math.sin((normZ + dz) * 0.0042) * 35;
+        const nextY = Math.sin((normZ + dz) * 0.0025) * 18 + Math.cos((normZ + dz) * 0.001) * 10;
+        
+        const dx = nextX - x;
+        const dy = nextY - y;
+        
+        // Side normal vector (perpendicular to road on XZ plane)
+        const len = Math.sqrt(dx * dx + dz * dz);
+        const nx = dz / len;
+        const nz = -dx / len;
+
+        return { x, y, z: normZ, dx, dy, dz, nx, nz, curvature: dx / dz };
+    }
+
+    /* ==========================================================================
+       3D SCENE SETUP & PROCEDURAL ASSETS
+       ========================================================================== */
+    const container = document.getElementById('game-container');
+    const scene = new THREE.Scene();
+    scene.fog = new THREE.FogExp2(0x1a0f28, 0.0025);
+
+    const camera = new THREE.PerspectiveCamera(65, window.innerWidth / window.innerHeight, 0.3, 1200);
+    const renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: "high-performance" });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.shadowMap.enabled = false;
+    container.appendChild(renderer.domElement);
+
+    // Sky & Lighting
+    const hemiLight = new THREE.HemisphereLight(0xffddaa, 0x111122, 0.9);
+    scene.add(hemiLight);
+    const dirLight = new THREE.DirectionalLight(0xff9944, 1.2);
+    dirLight.position.set(100, 150, 50);
+    scene.add(dirLight);
+
+    // Dynamic Skydome / Backdrop Mountains
+    const skyGeo = new THREE.SphereGeometry(800, 24, 16);
+    const skyMat = new THREE.MeshBasicMaterial({
+        color: 0x221133,
+        side: THREE.BackSide
+    });
+    const skyMesh = new THREE.Mesh(skyGeo, skyMat);
+    scene.add(skyMesh);
+
+    // Build Procedural Ribbon Road Mesh
+    const ROAD_SEGMENTS = 1400;
+    const roadGeo = new THREE.BufferGeometry();
+    const roadVerts = [];
+    const roadUvs = [];
+    const roadIndices = [];
+
+    // Terrain alongside road
+    const terrainGeo = new THREE.BufferGeometry();
+    const terrainVerts = [];
+    const terrainUvs = [];
+    const terrainIndices = [];
+
+    for (let i = 0; i <= ROAD_SEGMENTS; i++) {
+        const z = (i / ROAD_SEGMENTS) * TRACK_LENGTH;
+        const r = getRoadData(z);
+        const hw = ROAD_WIDTH * 0.5;
+
+        // Road vertices (Left, Right)
+        roadVerts.push(r.x - r.nx * hw, r.y + 0.05, z + r.nz * hw);
+        roadVerts.push(r.x + r.nx * hw, r.y + 0.05, z - r.nz * hw);
+        
+        const uvY = (z / 10);
+        roadUvs.push(0, uvY);
+        roadUvs.push(1, uvY);
+
+        // Terrain Left and Right borders
+        const tw = 250;
+        terrainVerts.push(r.x - r.nx * tw, r.y - 12 + Math.sin(i * 0.2) * 8, z + r.nz * tw);
+        terrainVerts.push(r.x - r.nx * hw, r.y, z + r.nz * hw);
+        terrainVerts.push(r.x + r.nx * hw, r.y, z - r.nz * hw);
+        terrainVerts.push(r.x + r.nx * tw, r.y - 12 + Math.cos(i * 0.2) * 8, z - r.nz * tw);
+
+        terrainUvs.push(0, uvY * 0.1);
+        terrainUvs.push(0.4, uvY * 0.1);
+        terrainUvs.push(0.6, uvY * 0.1);
+        terrainUvs.push(1, uvY * 0.1);
+
+        if (i < ROAD_SEGMENTS) {
+            const v = i * 2;
+            roadIndices.push(v, v + 1, v + 2);
+            roadIndices.push(v + 1, v + 3, v + 2);
+
+            const tv = i * 4;
+            // Left terrain
+            terrainIndices.push(tv, tv + 1, tv + 4);
+            terrainIndices.push(tv + 1, tv + 5, tv + 4);
+            // Right terrain
+            terrainIndices.push(tv + 2, tv + 3, tv + 6);
+            terrainIndices.push(tv + 3, tv + 7, tv + 6);
+        }
+    }
+
+    roadGeo.setAttribute('position', new THREE.Float32BufferAttribute(roadVerts, 3));
+    roadGeo.setAttribute('uv', new THREE.Float32BufferAttribute(roadUvs, 2));
+    roadGeo.setIndex(roadIndices);
+    roadGeo.computeVertexNormals();
+
+    // Procedural Road Canvas Texture
+    const roadCanvas = document.createElement('canvas');
+    roadCanvas.width = 512;
+    roadCanvas.height = 512;
+    const rc = roadCanvas.getContext('2d');
+    // Dark Asphalt
+    rc.fillStyle = '#1c1c24';
+    rc.fillRect(0, 0, 512, 512);
+    // Noise/grain
+    rc.fillStyle = 'rgba(255,255,255,0.04)';
+    for(let n=0; n<12000; n++) {
+        rc.fillRect(Math.random()*512, Math.random()*512, 2, 2);
+    }
+    // Red/White curb edges
+    for (let y = 0; y < 512; y += 32) {
+        rc.fillStyle = (y % 64 === 0) ? '#ff2222' : '#ffffff';
+        rc.fillRect(0, y, 24, 32);
+        rc.fillRect(512 - 24, y, 24, 32);
+    }
+    // Yellow dashed center stripe
+    rc.fillStyle = '#ffcc00';
+    for (let y = 0; y < 512; y += 64) {
+        rc.fillRect(250, y, 12, 36);
+    }
+    // Solid white shoulder lines
+    rc.fillStyle = '#eeeeee';
+    rc.fillRect(40, 0, 8, 512);
+    rc.fillRect(512 - 48, 0, 8, 512);
+
+    const roadTex = new THREE.CanvasTexture(roadCanvas);
+    roadTex.wrapS = THREE.RepeatWrapping;
+    roadTex.wrapT = THREE.RepeatWrapping;
+    roadTex.repeat.set(1, 140);
+
+    const roadMat = new THREE.MeshLambertMaterial({ map: roadTex, roughness: 0.8 });
+    const roadMesh = new THREE.Mesh(roadGeo, roadMat);
+    scene.add(roadMesh);
+
+    // Terrain Mesh
+    terrainGeo.setAttribute('position', new THREE.Float32BufferAttribute(terrainVerts, 3));
+    terrainGeo.setAttribute('uv', new THREE.Float32BufferAttribute(terrainUvs, 2));
+    terrainGeo.setIndex(terrainIndices);
+    terrainGeo.computeVertexNormals();
+    const terrainMat = new THREE.MeshLambertMaterial({ color: 0x1b131f, roughness: 0.9 });
+    const terrainMesh = new THREE.Mesh(terrainGeo, terrainMat);
+    scene.add(terrainMesh);
+
+    // Scenery Props: Palm Trees, Billboards, Rocks, Cacti
+    const propGroup = new THREE.Group();
+    scene.add(propGroup);
+
+    // Low-poly Tree Generator
+    function createTree() {
+        const g = new THREE.Group();
+        const trunkGeo = new THREE.CylinderGeometry(0.3, 0.6, 6, 5);
+        const trunkMat = new THREE.MeshLambertMaterial({ color: 0x4a2a18 });
+        const trunk = new THREE.Mesh(trunkGeo, trunkMat);
+        trunk.position.y = 3;
+        g.add(trunk);
+
+        const crownGeo = new THREE.ConeGeometry(2.8, 6, 5);
+        const crownMat = new THREE.MeshLambertMaterial({ color: 0x1a4522 });
+        const crown1 = new THREE.Mesh(crownGeo, crownMat);
+        crown1.position.y = 6.5;
+        g.add(crown1);
+        const crown2 = new THREE.Mesh(crownGeo, crownMat);
+        crown2.position.y = 8.5;
+        crown2.scale.set(0.75, 0.75, 0.75);
+        g.add(crown2);
+        return g;
+    }
+
+    // Billboard Generator
+    function createBillboard(text, color) {
+        const g = new THREE.Group();
+        const postGeo = new THREE.CylinderGeometry(0.2, 0.2, 8);
+        const postMat = new THREE.MeshLambertMaterial({ color: 0x333333 });
+        const p1 = new THREE.Mesh(postGeo, postMat);
+        p1.position.set(-3, 4, 0);
+        const p2 = new THREE.Mesh(postGeo, postMat);
+        p2.position.set(3, 4, 0);
+        g.add(p1, p2);
+
+        const boardGeo = new THREE.BoxGeometry(7, 3, 0.4);
+        const bCanvas = document.createElement('canvas');
+        bCanvas.width = 256; bCanvas.height = 128;
+        const bc = bCanvas.getContext('2d');
+        bc.fillStyle = color; bc.fillRect(0,0,256,128);
+        bc.fillStyle = '#fff'; bc.font = 'bold 30px Impact'; bc.textAlign = 'center';
+        bc.fillText(text, 128, 70);
+        bc.lineWidth = 6; bc.strokeStyle = '#000'; bc.strokeRect(4,4,248,120);
+
+        const boardMat = new THREE.MeshBasicMaterial({ map: new THREE.CanvasTexture(bCanvas) });
+        const board = new THREE.Mesh(boardGeo, boardMat);
+        board.position.set(0, 6.5, 0);
+        g.add(board);
+        return g;
+    }
+
+    const billboardsTexts = [
+        ["SPEED KILLS", "#ff0044"],
+        ["NO COPS AHEAD", "#0088ff"],
+        ["OCTANE FUEL", "#ffaa00"],
+        ["SKATE OR DIE", "#7700ff"],
+        ["ROAD RASH '95", "#00cc66"]
+    ];
+
+    // Distribute scenery along road track
+    for (let z = 60; z < TRACK_LENGTH - 100; z += 40 + Math.random() * 45) {
+        const side = Math.random() > 0.5 ? 1 : -1;
+        const r = getRoadData(z);
+        const distFromRoad = ROAD_WIDTH * 0.5 + 4 + Math.random() * 18;
+        const posX = r.x + r.nx * distFromRoad * side;
+        const posZ = z - r.nz * distFromRoad * side;
+
+        if (Math.random() < 0.2) {
+            const bIndex = Math.floor(Math.random() * billboardsTexts.length);
+            const bb = createBillboard(billboardsTexts[bIndex][0], billboardsTexts[bIndex][1]);
+            bb.position.set(posX, r.y, posZ);
+            bb.rotation.y = Math.atan2(r.dx, r.dz) + (side > 0 ? 0.3 : -0.3);
+            propGroup.add(bb);
+        } else {
+            const tree = createTree();
+            tree.position.set(posX, r.y, posZ);
+            const scale = 0.8 + Math.random() * 0.7;
+            tree.scale.set(scale, scale, scale);
+            propGroup.add(tree);
+        }
+    }
+
+    // Finish Line Arch Banner
+    const finishArch = new THREE.Group();
+    const archPillarGeo = new THREE.BoxGeometry(1.2, 12, 1.2);
+    const archMat = new THREE.MeshLambertMaterial({ color: 0xffee00 });
+    const archP1 = new THREE.Mesh(archPillarGeo, archMat);
+    archP1.position.set(-ROAD_WIDTH * 0.5 - 1, 6, 0);
+    const archP2 = new THREE.Mesh(archPillarGeo, archMat);
+    archP2.position.set(ROAD_WIDTH * 0.5 + 1, 6, 0);
+    const archTopGeo = new THREE.BoxGeometry(ROAD_WIDTH + 4, 3, 1.5);
+
+    const fCanvas = document.createElement('canvas');
+    fCanvas.width = 512; fCanvas.height = 128;
+    const fc = fCanvas.getContext('2d');
+    fc.fillStyle = '#ff0044'; fc.fillRect(0,0,512,128);
+    // Checker pattern
+    fc.fillStyle = '#fff';
+    for (let x=0; x<512; x+=32) {
+        for (let y=0; y<128; y+=32) {
+            if ((x/32 + y/32)%2 === 0) fc.fillRect(x,y,32,32);
+        }
+    }
+    fc.fillStyle = '#000'; fc.font = 'bold 50px Impact'; fc.textAlign = 'center';
+    fc.fillText("FINISH LINE", 256, 80);
+
+    const archTopMat = new THREE.MeshBasicMaterial({ map: new THREE.CanvasTexture(fCanvas) });
+    const archTop = new THREE.Mesh(archTopGeo, archTopMat);
+    archTop.position.set(0, 9.5, 0);
+    finishArch.add(archP1, archP2, archTop);
+
+    const finishRoad = getRoadData(TRACK_LENGTH - 200);
+    finishArch.position.set(finishRoad.x, finishRoad.y, TRACK_LENGTH - 200);
+    scene.add(finishArch);
+
+    /* ==========================================================================
+       BIKE & RIDER 3D HIERARCHY
+       ========================================================================== */
+    function createMotorcycle(colorHex, isCop = false) {
+        const bikeGroup = new THREE.Group();
+
+        // Bike Frame / Chassis
+        const frameGeo = new THREE.BoxGeometry(0.65, 0.6, 2.2);
+        const frameMat = new THREE.MeshLambertMaterial({ color: colorHex });
+        const frame = new THREE.Mesh(frameGeo, frameMat);
+        frame.position.y = 0.65;
+        bikeGroup.add(frame);
+
+        // Fuel Tank / Fairing
+        const fairingGeo = new THREE.BoxGeometry(0.6, 0.45, 1.1);
+        const fairingMat = new THREE.MeshLambertMaterial({ color: isCop ? 0xffffff : colorHex });
+        const fairing = new THREE.Mesh(fairingGeo, fairingMat);
+        fairing.position.set(0, 0.95, 0.2);
+        bikeGroup.add(fairing);
+
+        // Engine Block / Chrome Pipes
+        const engGeo = new THREE.BoxGeometry(0.55, 0.5, 0.8);
+        const engMat = new THREE.MeshLambertMaterial({ color: 0x333339 });
+        const eng = new THREE.Mesh(engGeo, engMat);
+        eng.position.set(0, 0.45, -0.1);
+        bikeGroup.add(eng);
+
+        const pipeGeo = new THREE.CylinderGeometry(0.08, 0.1, 1.6);
+        const chromeMat = new THREE.MeshLambertMaterial({ color: 0xcccccc });
+        const pipeL = new THREE.Mesh(pipeGeo, chromeMat);
+        pipeL.rotation.x = Math.PI / 2;
+        pipeL.position.set(0.35, 0.35, -0.6);
+        bikeGroup.add(pipeL);
+
+        // Wheels
+        const wheelGeo = new THREE.CylinderGeometry(0.48, 0.48, 0.32, 16);
+        const tireMat = new THREE.MeshLambertMaterial({ color: 0x111111 });
+        const frontWheel = new THREE.Mesh(wheelGeo, tireMat);
+        frontWheel.rotation.z = Math.PI / 2;
+        frontWheel.position.set(0, 0.48, 1.15);
+        bikeGroup.add(frontWheel);
+
+        const rearWheel = new THREE.Mesh(wheelGeo, tireMat);
+        rearWheel.rotation.z = Math.PI / 2;
+        rearWheel.position.set(0, 0.48, -1.0);
+        bikeGroup.add(rearWheel);
+
+        // Handlebars
+        const barGeo = new THREE.BoxGeometry(1.2, 0.08, 0.08);
+        const bar = new THREE.Mesh(barGeo, chromeMat);
+        bar.position.set(0, 1.25, 0.8);
+        bikeGroup.add(bar);
+
+        // Headlight
+        const lightGeo = new THREE.BoxGeometry(0.3, 0.2, 0.1);
+        const lightMat = new THREE.MeshBasicMaterial({ color: 0xffffff });
+        const light = new THREE.Mesh(lightGeo, lightMat);
+        light.position.set(0, 1.05, 1.3);
+        bikeGroup.add(light);
+
+        // Cop Siren Lights
+        let copSiren = null;
+        if (isCop) {
+            copSiren = new THREE.Group();
+            const redLight = new THREE.Mesh(new THREE.BoxGeometry(0.18, 0.18, 0.18), new THREE.MeshBasicMaterial({ color: 0xff0000 }));
+            redLight.position.set(-0.35, 1.35, 0.4);
+            const blueLight = new THREE.Mesh(new THREE.BoxGeometry(0.18, 0.18, 0.18), new THREE.MeshBasicMaterial({ color: 0x0044ff }));
+            blueLight.position.set(0.35, 1.35, 0.4);
+            copSiren.add(redLight, blueLight);
+            bikeGroup.add(copSiren);
+        }
+
+        // BIKER CHARACTER
+        const riderGroup = new THREE.Group();
+
+        // Leather Torso
+        const torsoGeo = new THREE.BoxGeometry(0.6, 0.75, 0.45);
+        const torsoMat = new THREE.MeshLambertMaterial({ color: isCop ? 0x152238 : 0x111111 });
+        const torso = new THREE.Mesh(torsoGeo, torsoMat);
+        torso.position.set(0, 1.45, 0.15);
+        torso.rotation.x = 0.35; // Leaning forward racer posture
+        riderGroup.add(torso);
+
+        // Helmet / Head
+        const headGeo = new THREE.SphereGeometry(0.26, 12, 10);
+        const headMat = new THREE.MeshLambertMaterial({ color: isCop ? 0xffffff : 0xffee00 });
+        const head = new THREE.Mesh(headGeo, headMat);
+        head.position.set(0, 1.95, 0.35);
+
+        // Visor
+        const visorGeo = new THREE.BoxGeometry(0.24, 0.12, 0.15);
+        const visorMat = new THREE.MeshBasicMaterial({ color: 0x050505 });
+        const visor = new THREE.Mesh(visorGeo, visorMat);
+        visor.position.set(0, 1.95, 0.52);
+        head.add(visor);
+        riderGroup.add(head);
+
+        // Arms (Pivoting for Attacks!)
+        const armGeo = new THREE.BoxGeometry(0.16, 0.55, 0.18);
+        const armMat = new THREE.MeshLambertMaterial({ color: 0x222222 });
+
+        const leftArm = new THREE.Mesh(armGeo, armMat);
+        leftArm.position.set(-0.38, 1.4, 0.4);
+        leftArm.rotation.x = -0.5;
+        riderGroup.add(leftArm);
+
+        const rightArm = new THREE.Mesh(armGeo, armMat);
+        rightArm.position.set(0.38, 1.4, 0.4);
+        rightArm.rotation.x = -0.5;
+        riderGroup.add(rightArm);
+
+        // Club / Weapon in right hand
+        const batGeo = new THREE.CylinderGeometry(0.04, 0.07, 0.85);
+        const batMat = new THREE.MeshLambertMaterial({ color: 0x885522 });
+        const club = new THREE.Mesh(batGeo, batMat);
+        club.position.set(0, -0.3, 0.15);
+        club.rotation.x = Math.PI / 3;
+        rightArm.add(club);
+
+        // Legs
+        const legGeo = new THREE.BoxGeometry(0.2, 0.55, 0.22);
+        const legMat = new THREE.MeshLambertMaterial({ color: 0x1a2b40 });
+        const leftLeg = new THREE.Mesh(legGeo, legMat);
+        leftLeg.position.set(-0.32, 0.9, 0.1);
+        leftLeg.rotation.x = 0.5;
+
+        const rightLeg = new THREE.Mesh(legGeo, legMat);
+        rightLeg.position.set(0.32, 0.9, 0.1);
+        rightLeg.rotation.x = 0.5;
+
+        riderGroup.add(leftLeg, rightLeg);
+        bikeGroup.add(riderGroup);
+
+        return {
+            mesh: bikeGroup,
+            frontWheel,
+            rearWheel,
+            rider: riderGroup,
+            leftArm,
+            rightArm,
+            leftLeg,
+            rightLeg,
+            copSiren
+        };
+    }
+
+    // CIVILIAN TRAFFIC CAR GENERATOR
+    function createCar(colorHex) {
+        const car = new THREE.Group();
+        const bodyGeo = new THREE.BoxGeometry(2.1, 0.9, 4.2);
+        const bodyMat = new THREE.MeshLambertMaterial({ color: colorHex });
+        const body = new THREE.Mesh(bodyGeo, bodyMat);
+        body.position.y = 0.65;
+        car.add(body);
+
+        const cabinGeo = new THREE.BoxGeometry(1.8, 0.75, 2.3);
+        const cabinMat = new THREE.MeshLambertMaterial({ color: 0x111118 });
+        const cabin = new THREE.Mesh(cabinGeo, cabinMat);
+        cabin.position.set(0, 1.4, -0.2);
+        car.add(cabin);
+
+        // Red taillights
+        const tailGeo = new THREE.BoxGeometry(0.4, 0.15, 0.1);
+        const tailMat = new THREE.MeshBasicMaterial({ color: 0xff0022 });
+        const tailL = new THREE.Mesh(tailGeo, tailMat);
+        tailL.position.set(-0.7, 0.8, -2.12);
+        const tailR = new THREE.Mesh(tailGeo, tailMat);
+        tailR.position.set(0.7, 0.8, -2.12);
+        car.add(tailL, tailR);
+
+        return car;
+    }
+
+    /* ==========================================================================
+       GAME STATE & ENTITIES
+       ========================================================================== */
+    const GAME_STATES = { MENU: 0, RACING: 1, WRECKED: 2, FINISHED: 3 };
+    let gameState = GAME_STATES.MENU;
+
+    const player = {
+        z: 30,
+        laneOffset: 0, // -1 (far left) to 1 (far right)
+        speed: 0,
+        maxSpeed: 175,
+        accel: 52,
+        brake: 70,
+        handling: 2.6,
+        nitro: 100,
+        isNitro: false,
+        health: 100,
+        leanAngle: 0,
+        bike: null,
+        attackState: null, // 'punch_l', 'kick_r', or null
+        attackTimer: 0,
+        knockdownTimer: 0,
+        invulnerable: 0,
+        scoreKOs: 0
+    };
+
+    // Instantiate Player 3D Bike
+    player.bike = createMotorcycle(0xff0044);
+    scene.add(player.bike.mesh);
+
+    // Opponent Bikers Data
+    const RIVAL_NAMES = [
+        { name: "VIPER", bike: "YAMAHA R1", color: 0x00f0ff, skill: 1.0 },
+        { name: "BIFF", bike: "HARLEY SLUGGER", color: 0xff6600, skill: 0.95 },
+        { name: "AXEL", bike: "KAWASAKI NINJA", color: 0x00ff44, skill: 1.05 },
+        { name: "HAMMER", bike: "DUCATI 916", color: 0xffee00, skill: 0.9 },
+        { name: "RAVEN", bike: "HONDA CBR", color: 0xaa00ff, skill: 1.02 },
+        { name: "O'LEARY", bike: "POLICE INTERCEPTOR", color: 0x0022aa, isCop: true, skill: 1.08 },
+        { name: "BUTCH", bike: "SUZUKI HAYABUSA", color: 0xff00bb, skill: 0.92 }
+    ];
+
+    const rivals = [];
+    RIVAL_NAMES.forEach((cfg, idx) => {
+        const bikeObj = createMotorcycle(cfg.color, cfg.isCop);
+        scene.add(bikeObj.mesh);
+
+        rivals.push({
+            id: idx,
+            name: cfg.name,
+            bikeName: cfg.bike,
+            isCop: !!cfg.isCop,
+            color: cfg.color,
+            bike: bikeObj,
+            z: 80 + idx * 75,
+            laneOffset: (Math.random() - 0.5) * 1.4,
+            speed: 110 + Math.random() * 25,
+            health: 100,
+            state: 'racing', // 'racing', 'attacking', 'tumbling', 'recovering'
+            tumbleRot: 0,
+            attackCooldown: 1.5 + Math.random() * 2,
+            targetLane: (Math.random() - 0.5) * 1.4
+        });
+    });
+
+    // Civilian Traffic Cars
+    const traffic = [];
+    const CAR_COLORS = [0xdddddd, 0x992222, 0x224488, 0x448844, 0xcca020];
+    for (let i = 0; i < 14; i++) {
+        const carMesh = createCar(CAR_COLORS[i % CAR_COLORS.length]);
+        scene.add(carMesh);
+        traffic.push({
+            mesh: carMesh,
+            z: 400 + i * 850 + Math.random() * 200,
+            laneOffset: (i % 2 === 0 ? 0.45 : -0.45) + (Math.random() - 0.5) * 0.2,
+            speed: 55 + Math.random() * 20
+        });
+    }
+
+    /* ==========================================================================
+       INPUT SYSTEM
+       ========================================================================== */
+    const keys = {};
+    window.addEventListener('keydown', (e) => {
+        keys[e.code] = true;
+        // Combat key bindings
+        if (e.code === 'KeyJ' || e.code === 'KeyZ') executePlayerAttack('punch_l');
+        if (e.code === 'KeyK' || e.code === 'KeyX') executePlayerAttack('kick_r');
+        if (e.code === 'Space') {
+            // Auto attack nearest
+            const nearest = getNearestRival();
+            if (nearest && nearest.relLane < 0) executePlayerAttack('punch_l');
+            else executePlayerAttack('kick_r');
+        }
+    });
+    window.addEventListener('keyup', (e) => {
+        keys[e.code] = false;
+    });
+
+    // Mouse Attack support
+    window.addEventListener('mousedown', (e) => {
+        if (gameState !== GAME_STATES.RACING) return;
+        if (e.button === 0) executePlayerAttack('punch_l'); // Left Click
+        if (e.button === 2) executePlayerAttack('kick_r'); // Right Click
+    });
+    window.addEventListener('contextmenu', e => e.preventDefault());
+
+    // Mobile Virtual Buttons
+    const setupTouchBtn = (id, onDown, onUp) => {
+        const el = document.getElementById(id);
+        el.addEventListener('touchstart', (e) => { e.preventDefault(); onDown(); });
+        el.addEventListener('touchend', (e) => { e.preventDefault(); onUp(); });
+    };
+
+    let touchGas = false, touchLeft = false, touchRight = false, touchNitro = false;
+    setupTouchBtn('mBtnGas', () => touchGas = true, () => touchGas = false);
+    setupTouchBtn('mBtnLeft', () => touchLeft = true, () => touchLeft = false);
+    setupTouchBtn('mBtnRight', () => touchRight = true, () => touchRight = false);
+    setupTouchBtn('mBtnNitro', () => touchNitro = true, () => touchNitro = false);
+    document.getElementById('mBtnPunchL').addEventListener('touchstart', (e) => { e.preventDefault(); executePlayerAttack('punch_l'); });
+    document.getElementById('mBtnPunchR').addEventListener('touchstart', (e) => { e.preventDefault(); executePlayerAttack('kick_r'); });
+
+    // Detect mobile touch
+    if ('ontouchstart' in window || navigator.maxTouchPoints > 0) {
+        document.getElementById('mobile-controls').style.display = 'flex';
+    }
+
+    /* ==========================================================================
+       COMBAT MECHANICS
+       ========================================================================== */
+    function executePlayerAttack(type) {
+        if (player.attackState || player.knockdownTimer > 0 || gameState !== GAME_STATES.RACING) return;
+        player.attackState = type;
+        player.attackTimer = 0.35;
+        audio.playWhoosh();
+
+        // Hit Detection against nearby rivals
+        let hitSomeone = false;
+        rivals.forEach(riv => {
+            if (riv.state === 'tumbling') return;
+            const dz = riv.z - player.z;
+            const dl = riv.laneOffset - player.laneOffset;
+
+            // Attack range check: within ~4 meters in Z and correct side
+            if (Math.abs(dz) < 3.2) {
+                const isLeftHit = type === 'punch_l' && dl < 0.1 && dl > -1.2;
+                const isRightHit = type === 'kick_r' && dl > -0.1 && dl < 1.2;
+
+                if (isLeftHit || isRightHit) {
+                    hitSomeone = true;
+                    const dmg = type === 'kick_r' ? 38 : 28;
+                    riv.health -= dmg;
+                    riv.laneOffset += (type === 'kick_r' ? 0.45 : -0.45); // knock away
+                    audio.playHit();
+                    showCombatAlert(type === 'kick_r' ? "BRUTAL KICK!" : "WHACK!");
+
+                    // Target Opponent Lock HUD
+                    triggerOpponentHUD(riv);
+
+                    if (riv.health <= 0) {
+                        // Knocked Out & Wrecked!
+                        riv.state = 'tumbling';
+                        riv.tumbleRot = 0;
+                        player.scoreKOs++;
+                        showCombatAlert("WRECKED " + riv.name + "!");
+                        audio.playCrash();
+                    }
+                }
+            }
+        });
+
+        // Camera Punch Impact shake
+        if (hitSomeone) {
+            camShake = 0.35;
+        }
+    }
+
+    function getNearestRival() {
+        let close = null, minDist = 8;
+        rivals.forEach(r => {
+            const d = Math.abs(r.z - player.z);
+            if (d < minDist && r.state !== 'tumbling') {
+                minDist = d;
+                close = { rival: r, relLane: r.laneOffset - player.laneOffset };
+            }
+        });
+        return close;
+    }
+
+    let combatAlertTimer = 0;
+    function showCombatAlert(text) {
+        const el = document.getElementById('combatAlert');
+        el.innerText = text;
+        el.style.opacity = '1';
+        el.style.transform = 'translate(-50%, -50%) scale(1.3) rotate(' + ((Math.random()-0.5)*15) + 'deg)';
+        combatAlertTimer = 0.8;
+    }
+
+    let oppCardTimer = 0;
+    let lockedOpponent = null;
+    function triggerOpponentHUD(riv) {
+        lockedOpponent = riv;
+        oppCardTimer = 3.5;
+        const card = document.getElementById('opponentCard');
+        card.classList.add('active');
+        document.getElementById('oppName').innerText = riv.name + (riv.isCop ? " [COP]" : "");
+        document.getElementById('oppBikeType').innerText = riv.bikeName;
+        document.getElementById('oppStamina').innerText = Math.max(0, Math.round(riv.health)) + "%";
+        document.getElementById('oppBar').style.width = Math.max(0, riv.health) + "%";
+    }
+
+    function triggerWreckFlash() {
+        const f = document.getElementById('flash-overlay');
+        f.style.opacity = '0.85';
+        setTimeout(() => f.style.opacity = '0', 120);
+    }
+
+    /* ==========================================================================
+       GAME LIFECYCLE & RESET
+       ========================================================================== */
+    function startGame() {
+        audio.init();
+        gameState = GAME_STATES.RACING;
+        document.getElementById('startScreen').style.display = 'none';
+        document.getElementById('endScreen').style.display = 'none';
+        document.getElementById('hud').style.display = 'flex';
+
+        // Reset player
+        player.z = 20;
+        player.laneOffset = 0;
+        player.speed = 10;
+        player.health = 100;
+        player.nitro = 100;
+        player.knockdownTimer = 0;
+        player.scoreKOs = 0;
+
+        // Reset rivals
+        rivals.forEach((riv, i) => {
+            riv.z = 60 + i * 80;
+            riv.laneOffset = (Math.random() - 0.5) * 1.3;
+            riv.speed = 115 + Math.random() * 25;
+            riv.health = 100;
+            riv.state = 'racing';
+        });
+
+        // Reset traffic
+        traffic.forEach((car, i) => {
+            car.z = 350 + i * 850;
+        });
+    }
+
+    function endGame(isVictory) {
+        gameState = isVictory ? GAME_STATES.FINISHED : GAME_STATES.WRECKED;
+        audio.stopEngine();
+        document.getElementById('hud').style.display = 'none';
+        document.getElementById('endScreen').style.display = 'flex';
+
+        const rank = calculateRank();
+        document.getElementById('endTitle').innerText = isVictory ? "VICTORY!" : "WASTED!";
+        document.getElementById('endSubtitle').innerText = isVictory ? "YOU RULED THE HIGHWAY!" : "ROAD RASH ROADKILL";
+        document.getElementById('finalRank').innerText = rank + (rank === 1 ? 'st Place' : rank === 2 ? 'nd Place' : rank === 3 ? 'rd Place' : 'th Place');
+        document.getElementById('finalSpeed').innerText = Math.round(player.speed) + " MPH";
+        document.getElementById('finalKOs').innerText = player.scoreKOs;
+        document.getElementById('finalDamage').innerText = (100 - Math.round(player.health)) + "%";
+    }
+
+    document.getElementById('startBtn').onclick = startGame;
+    document.getElementById('restartBtn').onclick = startGame;
+
+    function calculateRank() {
+        let pos = 1;
+        rivals.forEach(r => {
+            if (r.z > player.z) pos++;
+        });
+        return pos;
+    }
+
+    /* ==========================================================================
+       MAIN ANIMATION LOOP & PHYSICS
+       ========================================================================== */
+    let lastTime = performance.now();
+    let camShake = 0;
+
+    function animate() {
+        requestAnimationFrame(animate);
+
+        const now = performance.now();
+        const dt = Math.min((now - lastTime) / 1000, 0.1);
+        lastTime = now;
+
+        if (gameState === GAME_STATES.RACING) {
+            updateGame(dt);
+        }
+
+        renderScene(dt);
+    }
+
+    function updateGame(dt) {
+        const isUp = keys['KeyW'] || keys['ArrowUp'] || touchGas;
+        const isDown = keys['KeyS'] || keys['ArrowDown'];
+        const isLeft = keys['KeyA'] || keys['ArrowLeft'] || touchLeft;
+        const isRight = keys['KeyD'] || keys['ArrowRight'] || touchRight;
+        const isNitroKey = (keys['ShiftLeft'] || keys['ShiftRight'] || touchNitro) && player.nitro > 0 && isUp;
+
+        // NITRO LOGIC
+        if (isNitroKey) {
+            player.isNitro = true;
+            player.nitro = Math.max(0, player.nitro - 35 * dt);
+            audio.playNitro();
+            document.getElementById('speedLines').style.opacity = '1';
+        } else {
+            player.isNitro = false;
+            player.nitro = Math.min(100, player.nitro + 6 * dt);
+            document.getElementById('speedLines').style.opacity = '0';
+        }
+
+        // PLAYER SPEED & ACCEL
+        const topSpeed = player.isNitro ? player.maxSpeed * 1.3 : player.maxSpeed;
+
+        if (player.knockdownTimer > 0) {
+            // Player wiped out on pavement
+            player.knockdownTimer -= dt;
+            player.speed = Math.max(0, player.speed - 90 * dt);
+            player.bike.mesh.rotation.z = Math.PI / 2.2; // bike sliding on ground
+        } else {
+            if (isUp) {
+                player.speed = Math.min(topSpeed, player.speed + (player.isNitro ? player.accel * 1.8 : player.accel) * dt);
+            } else if (isDown) {
+                player.speed = Math.max(0, player.speed - player.brake * dt);
+            } else {
+                player.speed = Math.max(0, player.speed - 22 * dt); // Rolling friction
+            }
+        }
+
+        // Road Position Advance (speed converted to world units/sec)
+        const forwardStep = (player.speed * 0.447) * 2.2 * dt;
+        player.z += forwardStep;
+
+        // STEERING & LEANING
+        let steerTarget = 0;
+        if (player.knockdownTimer <= 0) {
+            if (isLeft) steerTarget -= 1;
+            if (isRight) steerTarget += 1;
+
+            const steerSpeed = player.handling * (player.speed / player.maxSpeed);
+            player.laneOffset += steerTarget * steerSpeed * dt;
+            player.laneOffset = Math.max(-1.45, Math.min(1.45, player.laneOffset));
+
+            // Lean body into turn
+            const targetLean = -steerTarget * 0.55;
+            player.leanAngle += (targetLean - player.leanAngle) * 10 * dt;
+            player.bike.mesh.rotation.z = player.leanAngle;
+        }
+
+        // Road Bounds Friction Check (Off-road grass penalty)
+        if (Math.abs(player.laneOffset) > 1.05) {
+            player.speed = Math.max(25, player.speed - 65 * dt);
+            camShake = Math.max(camShake, 0.15);
+        }
+
+        // Attack Animation Timers
+        if (player.attackState) {
+            player.attackTimer -= dt;
+            const progress = (0.35 - player.attackTimer) / 0.35;
+            const swing = Math.sin(progress * Math.PI);
+
+            if (player.attackState === 'punch_l') {
+                player.bike.leftArm.rotation.x = -0.5 - swing * 1.5;
+                player.bike.leftArm.rotation.z = -swing * 1.2;
+            } else if (player.attackState === 'kick_r') {
+                player.bike.rightLeg.rotation.x = 0.5 - swing * 1.2;
+                player.bike.rightLeg.rotation.z = swing * 1.5;
+            }
+
+            if (player.attackTimer <= 0) {
+                player.attackState = null;
+                player.bike.leftArm.rotation.set(-0.5, 0, 0);
+                player.bike.rightLeg.rotation.set(0.5, 0, 0);
+            }
+        }
+
+        // Update Position on Road Spline
+        const rPos = getRoadData(player.z);
+        const pX = rPos.x + rPos.nx * (player.laneOffset * ROAD_WIDTH * 0.5);
+        const pZ = player.z - rPos.nz * (player.laneOffset * ROAD_WIDTH * 0.5);
+        const pY = rPos.y;
+
+        player.bike.mesh.position.set(pX, pY, pZ);
+        // Face forward tangent
+        const rotY = Math.atan2(rPos.dx, rPos.dz);
+        player.bike.mesh.rotation.y = rotY;
+
+        // Spin Wheels
+        const wheelSpin = player.speed * 0.25;
+        player.bike.frontWheel.rotation.x += wheelSpin;
+        player.bike.rearWheel.rotation.x += wheelSpin;
+
+        // ENGINE SOUND
+        audio.updateEngine(player.speed / player.maxSpeed, isUp);
+
+        // UPDATE RIVALS AI
+        rivals.forEach(riv => {
+            if (riv.state === 'tumbling') {
+                riv.speed = Math.max(0, riv.speed - 70 * dt);
+                riv.tumbleRot += 15 * dt;
+                riv.bike.mesh.rotation.x = riv.tumbleRot;
+                riv.bike.mesh.rotation.z = Math.PI / 2;
+                riv.bike.mesh.position.y = Math.max(0, riv.bike.mesh.position.y - 4 * dt);
+                return;
+            }
+
+            // Normal AI Racing Logic
+            const speedFluct = Math.sin(now * 0.002 + riv.id) * 15;
+            const targetSpeed = 125 * riv.skill + speedFluct;
+            riv.speed += (targetSpeed - riv.speed) * 0.8 * dt;
+
+            riv.z += (riv.speed * 0.447) * 2.2 * dt;
+
+            // Lane Wandering & Obstacle avoidance
+            riv.laneOffset += (riv.targetLane - riv.laneOffset) * 1.5 * dt;
+            if (Math.random() < 0.015) {
+                riv.targetLane = (Math.random() - 0.5) * 1.5;
+            }
+
+            // AI Proximity Agression towards player!
+            const dzToPlayer = player.z - riv.z;
+            const dlToPlayer = player.laneOffset - riv.laneOffset;
+
+            if (Math.abs(dzToPlayer) < 5) {
+                // Steer into player to fight
+                riv.targetLane = player.laneOffset;
+
+                // Cop Siren Sound
+                if (riv.isCop && Math.random() < 0.03) {
+                    audio.playSiren();
+                }
+
+                // AI Attacks Player
+                riv.attackCooldown -= dt;
+                if (riv.attackCooldown <= 0 && Math.abs(dzToPlayer) < 2.5 && Math.abs(dlToPlayer) < 0.6) {
+                    riv.attackCooldown = 2.2 + Math.random() * 1.5;
+                    // Rival hits player!
+                    audio.playHit();
+                    player.health -= 18;
+                    camShake = 0.4;
+                    triggerWreckFlash();
+                    showCombatAlert(riv.name + " SMACKED YOU!");
+
+                    if (player.health <= 0) {
+                        // Player wiped out!
+                        player.knockdownTimer = 2.5;
+                        player.health = 40; // Revive with lower health
+                        audio.playCrash();
+                    }
+                }
+            }
+
+            // Cop Siren Flash
+            if (riv.isCop && riv.bike.copSiren) {
+                const flash = Math.sin(now * 0.02) > 0;
+                riv.bike.copSiren.children[0].visible = flash;
+                riv.bike.copSiren.children[1].visible = !flash;
+            }
+
+            // Sync 3D Mesh
+            const rivRoad = getRoadData(riv.z);
+            const rx = rivRoad.x + rivRoad.nx * (riv.laneOffset * ROAD_WIDTH * 0.5);
+            const rz = riv.z - rivRoad.nz * (riv.laneOffset * ROAD_WIDTH * 0.5);
+            riv.bike.mesh.position.set(rx, rivRoad.y, rz);
+            riv.bike.mesh.rotation.y = Math.atan2(rivRoad.dx, rivRoad.dz);
+            riv.bike.mesh.rotation.z = -(riv.targetLane - riv.laneOffset) * 0.4;
+        });
+
+        // UPDATE CIVILIAN TRAFFIC & CRASH COLLISION
+        traffic.forEach(car => {
+            car.z += (car.speed * 0.447) * 2.2 * dt;
+            const cRoad = getRoadData(car.z);
+            const cx = cRoad.x + cRoad.nx * (car.laneOffset * ROAD_WIDTH * 0.5);
+            const cz = car.z - cRoad.nz * (car.laneOffset * ROAD_WIDTH * 0.5);
+            car.mesh.position.set(cx, cRoad.y, cz);
+            car.mesh.rotation.y = Math.atan2(cRoad.dx, cRoad.dz);
+
+            // Check collision with Player
+            const dz = Math.abs(car.z - player.z);
+            const dl = Math.abs(car.laneOffset - player.laneOffset);
+            if (dz < 3.2 && dl < 0.35 && player.knockdownTimer <= 0) {
+                // High Speed Crash!
+                audio.playCrash();
+                player.speed = 10;
+                player.health = Math.max(0, player.health - 40);
+                player.knockdownTimer = 2.8;
+                camShake = 0.8;
+                triggerWreckFlash();
+                showCombatAlert("TOTAL WRECK!");
+
+                if (player.health <= 0) {
+                    endGame(false);
+                }
+            }
+        });
+
+        // FINISH LINE CHECK
+        if (player.z >= TRACK_LENGTH - 200) {
+            const finalPos = calculateRank();
+            endGame(finalPos <= 3);
+        }
+
+        // UPDATE HUD
+        updateHUD(dt);
+    }
+
+    function updateHUD(dt) {
+        document.getElementById('speedVal').innerText = Math.round(player.speed);
+        document.getElementById('hudRank').innerText = calculateRank();
+        document.getElementById('healthBar').style.width = Math.max(0, player.health) + "%";
+        document.getElementById('healthNum').innerText = Math.max(0, Math.round(player.health)) + "%";
+        document.getElementById('nitroBar').style.width = player.nitro + "%";
+        document.getElementById('nitroNum').innerText = Math.round(player.nitro) + "%";
+
+        const progress = Math.min(100, Math.round((player.z / (TRACK_LENGTH - 200)) * 100));
+        document.getElementById('progressBar').style.width = progress + "%";
+        document.getElementById('distNum').innerText = progress + "%";
+
+        // Combat Hit Alert Fade
+        if (combatAlertTimer > 0) {
+            combatAlertTimer -= dt;
+            if (combatAlertTimer <= 0) {
+                document.getElementById('combatAlert').style.opacity = '0';
+            }
+        }
+
+        // Opponent Locked HUD Timeout
+        if (oppCardTimer > 0) {
+            oppCardTimer -= dt;
+            if (lockedOpponent) {
+                document.getElementById('oppStamina').innerText = Math.max(0, Math.round(lockedOpponent.health)) + "%";
+                document.getElementById('oppBar').style.width = Math.max(0, lockedOpponent.health) + "%";
+            }
+            if (oppCardTimer <= 0) {
+                document.getElementById('opponentCard').classList.remove('active');
+            }
+        }
+
+        // Rearview Mirror Radar Dots
+        const mirrorContainer = document.getElementById('mirrorDots');
+        mirrorContainer.innerHTML = '';
+        rivals.forEach(r => {
+            const relZ = r.z - player.z;
+            if (relZ < 0 && relZ > -65) {
+                const dot = document.createElement('div');
+                dot.className = 'radar-dot';
+                const xPercent = 50 + (r.laneOffset - player.laneOffset) * 35;
+                const yPercent = (Math.abs(relZ) / 65) * 100;
+                dot.style.left = xPercent + "%";
+                dot.style.top = yPercent + "%";
+                dot.style.backgroundColor = r.isCop ? '#00f0ff' : '#ff0055';
+                mirrorContainer.appendChild(dot);
+            }
+        });
+    }
+
+    /* ==========================================================================
+       CAMERA & DYNAMIC RENDERING
+       ========================================================================== */
+    function renderScene(dt) {
+        // Dynamic Chase Camera
+        const rPos = getRoadData(player.z);
+        const pPos = player.bike.mesh.position;
+
+        // Smooth camera follow position
+        const camDistance = 4.8;
+        const camHeight = 2.4;
+        
+        // Follow road angle
+        const camX = pPos.x - rPos.dx * camDistance;
+        const camZ = pPos.z - rPos.dz * camDistance;
+        const camY = pPos.y + camHeight;
+
+        camera.position.x += (camX - camera.position.x) * 15 * dt;
+        camera.position.y += (camY - camera.position.y) * 15 * dt;
+        camera.position.z += (camZ - camera.position.z) * 15 * dt;
+
+        // Apply Screen Shake
+        if (camShake > 0) {
+            camera.position.x += (Math.random() - 0.5) * camShake;
+            camera.position.y += (Math.random() - 0.5) * camShake;
+            camShake = Math.max(0, camShake - 1.2 * dt);
+        }
+
+        const lookTarget = new THREE.Vector3(
+            pPos.x + rPos.dx * 8,
+            pPos.y + 1.2,
+            pPos.z + rPos.dz * 8
+        );
+        camera.lookAt(lookTarget);
+
+        // Keep sky dome centered
+        skyMesh.position.copy(camera.position);
+
+        renderer.render(scene, camera);
+    }
+
+    // Window Resize Handling
+    window.addEventListener('resize', () => {
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+    });
+
+    // Start Animation
+    animate();
+    </script>
+</body>
+</html>
