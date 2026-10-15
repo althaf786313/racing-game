@@ -7,8 +7,14 @@ server, no assets. Everything (art, sound, music, tracks) is generated in code.
 ```
 open index.html          # macOS
 xdg-open index.html      # Linux
-# or serve it:  python3 -m http.server 8080
+# or serve it (recommended for the sandbox preview pane):
+python3 tools/serve.py 8000
 ```
+
+`tools/serve.py` is a small static server that sends `Cache-Control: no-store`
+(so a rebuilt `index.html` is never served stale), speaks HTTP/1.1 with
+keep-alive for reverse proxies, and binds `0.0.0.0`. Any static server works
+equally well for local play.
 
 ## What is in the box
 
