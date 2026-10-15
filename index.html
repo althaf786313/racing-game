@@ -38,6 +38,7 @@
   --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   --shadow-lg: 0 22px 60px rgba(0, 0, 0, 0.55);
   --ease: cubic-bezier(0.16, 1, 0.3, 1);
+  --pad-bottom: calc(22px + env(safe-area-inset-bottom));
 }
 
 * { box-sizing: border-box; }
@@ -114,6 +115,8 @@ kbd {
   justify-content: space-between;
   gap: 16px;
   padding: 0 16px;
+  padding-left: max(16px, env(safe-area-inset-left));
+  padding-right: max(16px, env(safe-area-inset-right));
   border-bottom: 1px solid var(--line);
   background: linear-gradient(180deg, rgba(20, 23, 31, 0.9), rgba(11, 13, 18, 0.75));
   position: relative;
@@ -406,11 +409,11 @@ body.touch .touch-pad { display: block; }
   transition: background 0.1s, transform 0.1s, border-color 0.1s;
 }
 .touch-btn.active { background: rgba(220, 255, 88, 0.28); border-color: var(--accent); color: var(--accent); transform: scale(0.94); }
-#btnLeft { left: 16px; bottom: 22px; width: 62px; height: 62px; }
-#btnRight { left: 88px; bottom: 22px; width: 62px; height: 62px; }
-#btnGas { right: 16px; bottom: 22px; width: 78px; height: 78px; background: rgba(220, 255, 88, 0.16); border-color: rgba(220, 255, 88, 0.55); font-size: 13px; }
-#btnBrake { right: 102px; bottom: 22px; width: 58px; height: 58px; }
-#btnNitro { right: 20px; bottom: 112px; width: 60px; height: 60px; background: rgba(34, 230, 255, 0.16); border-color: rgba(34, 230, 255, 0.55); }
+#btnLeft { left: 16px; bottom: var(--pad-bottom); width: 62px; height: 62px; }
+#btnRight { left: 88px; bottom: var(--pad-bottom); width: 62px; height: 62px; }
+#btnGas { right: 16px; bottom: var(--pad-bottom); width: 78px; height: 78px; background: rgba(220, 255, 88, 0.16); border-color: rgba(220, 255, 88, 0.55); font-size: 13px; }
+#btnBrake { right: 102px; bottom: var(--pad-bottom); width: 58px; height: 58px; }
+#btnNitro { right: 20px; bottom: calc(var(--pad-bottom) + 90px); width: 60px; height: 60px; background: rgba(34, 230, 255, 0.16); border-color: rgba(34, 230, 255, 0.55); }
 @media (max-height: 520px) {
   #btnGas { width: 66px; height: 66px; }
   #btnBrake { width: 50px; height: 50px; right: 90px; }
@@ -531,6 +534,9 @@ body.touch .touch-pad { display: block; }
   flex: 0 0 auto;
   display: flex; align-items: center; justify-content: space-between; gap: 14px;
   padding: 9px 16px; border-top: 1px solid var(--line);
+  padding-bottom: max(9px, env(safe-area-inset-bottom));
+  padding-left: max(16px, env(safe-area-inset-left));
+  padding-right: max(16px, env(safe-area-inset-right));
   background: rgba(11, 13, 18, 0.9); flex-wrap: wrap; z-index: 20;
 }
 .toolbar .group { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
@@ -555,6 +561,7 @@ body.touch .touch-pad { display: block; }
   .rail .card { min-width: 170px; padding: 10px; }
   .rail-right { display: none; }
   .hud-br { width: 132px; }
+  .minimap { margin-bottom: env(safe-area-inset-bottom); }
   .hud-tc { width: min(52%, 300px); }
   .rank-num { font-size: 40px; }
   .clock { font-size: 22px; }
