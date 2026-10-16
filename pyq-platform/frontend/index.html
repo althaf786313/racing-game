@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>PYQ Platform — Practice Previous Year Questions</title>
+<style>
+  :root {
+    --bg:#0b1020; --panel:#151b2e; --panel2:#1e2740; --text:#e6ecf5; --muted:#8b97b3;
+    --accent:#7c5cff; --accent2:#22d3ee; --ok:#10b981; --warn:#f59e0b; --err:#ef4444; --border:#2a3350;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:'Inter',system-ui,-apple-system,Segoe UI,Roboto,sans-serif;background:linear-gradient(160deg,#0b1020 0%,#1a1340 100%);color:var(--text);min-height:100vh}
+  a{color:var(--accent2);text-decoration:none}
+  .wrap{max-width:1200px;margin:0 auto;padding:18px}
+  header{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;margin-bottom:16px}
+  .brand{display:flex;align-items:center;gap:12px;cursor:pointer}
+  .logo{width:44px;height:44px;border-radius:13px;background:linear-gradient(135deg,var(--accent),var(--accent2));display:grid;place-items:center;font-weight:800;font-size:18px}
+  h1{margin:0;font-size:22px} header p{margin:4px 0 0;color:var(--muted);font-size:12px}
+  nav{display:flex;gap:6px;flex-wrap:wrap}
+  nav button{background:var(--panel);color:var(--text);border:1px solid var(--border);border-radius:10px;padding:8px 12px;font-size:13px;cursor:pointer}
+  nav button.active{background:var(--accent);border-color:var(--accent)}
+  .hero{background:linear-gradient(135deg,#1e1b4b,#0f172a);border:1px solid var(--border);border-radius:18px;padding:24px;margin-bottom:18px}
+  .hero h2{margin:0 0 6px;font-size:24px} .hero p{color:var(--muted);margin:0 0 14px}
+  .stats{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:18px}
+  .stat{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:10px 14px;min-width:90px}
+  .stat .n{font-size:20px;font-weight:700;color:var(--accent2)} .stat .l{font-size:11px;color:var(--muted)}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px}
+  .card{background:var(--panel);border:1px solid var(--border);border-radius:16px;padding:16px;cursor:pointer;transition:.15s}
+  .card:hover{border-color:var(--accent);transform:translateY(-2px)}
+  .card .icon{font-size:28px;margin-bottom:6px}
+  .card h3{margin:0 0 4px;font-size:16px} .card p{margin:0 0 8px;color:var(--muted);font-size:12px}
+  .card .meta{display:flex;gap:8px;font-size:11px;color:var(--muted)}
+  .card .meta span{background:var(--panel2);padding:2px 8px;border-radius:6px}
+  .section-title{font-size:16px;color:var(--accent2);margin:18px 0 10px;font-weight:700}
+  .tabs{display:flex;gap:6px;margin-bottom:14px;flex-wrap:wrap}
+  .tab{padding:8px 16px;border-radius:999px;background:var(--panel);border:1px solid var(--border);color:var(--muted);cursor:pointer;font-size:13px;font-weight:600}
+  .tab.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+  .chips{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px}
+  .chip{padding:6px 12px;border-radius:999px;background:var(--panel2);border:1px solid var(--border);color:var(--muted);cursor:pointer;font-size:12px}
+  .chip.active{background:var(--accent2);color:#0b1020;border-color:var(--accent2)}
+  .qcard{background:var(--panel);border:1px solid var(--border);border-radius:16px;padding:18px;margin-bottom:14px}
+  .qcard .qhead{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;font-size:12px;color:var(--muted)}
+  .qcard .qtext{font-size:15px;font-weight:600;line-height:1.5;margin-bottom:12px;white-space:pre-wrap}
+  .opts{display:flex;flex-direction:column;gap:8px}
+  .opt{padding:11px 14px;border-radius:10px;border:1px solid var(--border);background:var(--panel2);cursor:pointer;font-size:14px;transition:.15s;display:flex;gap:10px;align-items:center}
+  .opt:hover{border-color:var(--accent)}
+  .opt .letter{width:26px;height:26px;border-radius:50%;background:var(--panel);display:grid;place-items:center;font-weight:700;font-size:12px;flex-shrink:0}
+  .opt.correct{border-color:var(--ok);background:#0f2a1f}
+  .opt.wrong{border-color:var(--err);background:#2a0f14}
+  .opt.disabled{pointer-events:none;opacity:.7}
+  .opt.selected{border-color:var(--accent)}
+  .exp{margin-top:12px;padding:12px;border-radius:10px;background:var(--panel2);border:1px solid var(--border);font-size:13px;color:var(--muted);display:none}
+  .exp.show{display:block}
+  .exp b{color:var(--accent2)}
+  .qactions{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
+  .btn{cursor:pointer;border:none;border-radius:10px;padding:9px 14px;font-weight:600;font-size:13px}
+  .btn-primary{background:linear-gradient(135deg,var(--accent),#a78bfa);color:#fff}
+  .btn-ghost{background:var(--panel);color:var(--text);border:1px solid var(--border)}
+  .btn-sm{padding:6px 10px;font-size:12px}
+  .btn-ok{background:var(--ok);color:#fff}
+  .pager{display:flex;gap:8px;justify-content:center;margin:18px 0}
+  .empty{text-align:center;padding:40px;color:var(--muted)}
+  .modal-back{position:fixed;inset:0;background:rgba(0,0,0,.6);display:none;align-items:center;justify-content:center;z-index:50;padding:20px}
+  .modal-back.open{display:flex}
+  .modal{background:var(--panel);border:1px solid var(--border);border-radius:18px;padding:22px;width:100%;max-width:560px;max-height:90vh;overflow:auto}
+  .modal h2{margin:0 0 12px}
+  .modal label{display:block;font-size:12px;color:var(--muted);margin:10px 0 4px}
+  .modal input,.modal select{width:100%;padding:10px 12px;border-radius:10px;border:1px solid var(--border);background:var(--panel2);color:var(--text);font-size:14px}
+  .modal .row{display:flex;gap:10px;justify-content:flex-end;margin-top:14px}
+  .toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--panel);border:1px solid var(--border);padding:10px 16px;border-radius:10px;display:none;z-index:60}
+  .toast.show{display:block}
+  /* mock test */
+  .mock-layout{display:grid;grid-template-columns:1fr 260px;gap:14px}
+  @media(max-width:860px){.mock-layout{grid-template-columns:1fr}}
+  .palette{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:12px;position:sticky;top:14px}
+  .palette h4{margin:0 0 8px;font-size:13px;color:var(--accent2)}
+  .pgrid{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
+  .pbtn{aspect-ratio:1;border-radius:8px;border:1px solid var(--border);background:var(--panel2);color:var(--text);font-size:12px;cursor:pointer;font-weight:600}
+  .pbtn.answered{background:var(--accent);border-color:var(--accent)}
+  .pbtn.current{outline:2px solid var(--accent2)}
+  .pbtn.marked{background:var(--warn);border-color:var(--warn);color:#000}
+  .timer{font-size:20px;font-weight:700;color:var(--accent2);text-align:center;margin-bottom:10px}
+  .result-card{background:var(--panel);border:1px solid var(--border);border-radius:16px;padding:20px;margin-bottom:14px;text-align:center}
+  .result-card .big{font-size:42px;font-weight:800;color:var(--accent2)}
+  .review-item{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:10px}
+  .review-item .q{font-weight:600;margin-bottom:6px}
+  .badge{display:inline-block;padding:2px 8px;border-radius:999px;font-size:11px;font-weight:600}
+  .badge.ok{background:#0f2a1f;color:var(--ok)}
+  .badge.err{background:#2a0f14;color:var(--err)}
+  .badge.skip{background:#2a2210;color:var(--warn)}
+  .progress-bar{height:8px;background:var(--panel2);border-radius:4px;overflow:hidden;margin:6px 0}
+  .progress-bar>div{height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2));border-radius:4px}
+  footer{margin-top:24px;text-align:center;color:var(--muted);font-size:12px}
+  .hidden{display:none}
+  .searchbar{display:flex;gap:8px;margin-bottom:14px}
+  .searchbar input{flex:1;padding:11px 14px;border-radius:12px;border:1px solid var(--border);background:var(--panel);color:var(--text);font-size:14px}
+  .paper-row{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:12px 14px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+  .paper-row .t{font-weight:600;font-size:14px} .paper-row .m{font-size:12px;color:var(--muted)}
+  .bm-btn{background:none;border:none;color:var(--muted);cursor:pointer;font-size:18px;padding:0 4px}
+  .bm-btn.on{color:var(--warn)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="brand" onclick="route('home')">
+      <div class="logo">PYQ</div>
+      <div>
+        <h1>PYQ Platform</h1>
+        <p>Practice previous year questions — exam-wise, chapter-wise, mock tests.</p>
+      </div>
+    </div>
+    <nav>
+      <button onclick="route('home')" data-nav="home">Home</button>
+      <button onclick="route('bookmarks')" data-nav="bookmarks">Bookmarks</button>
+      <button onclick="route('progress')" data-nav="progress">Progress</button>
+    </nav>
+  </header>
+
+  <div id="view"></div>
+  <footer>Free PYQ practice. No login. Progress saved in your browser.</footer>
+</div>
+<div class="modal-back" id="mockModal">
+  <div class="modal">
+    <h2>Start Mock Test</h2>
+    <label>Exam</label>
+    <select id="m_exam"></select>
+    <label>Subjects (comma separated, blank = all)</label>
+    <input id="m_subjects" placeholder="Physics, Chemistry, Maths" />
+    <label>Number of questions</label>
+    <input id="m_count" type="number" value="20" />
+    <label>Time limit (minutes)</label>
+    <input id="m_time" type="number" value="30" />
+    <label>Difficulty</label>
+    <select id="m_diff"><option value="">All</option><option>Easy</option><option>Medium</option><option>Hard</option></select>
+    <div class="row">
+      <button class="btn-ghost" onclick="closeMock()">Cancel</button>
+      <button class="btn-primary" onclick="startMock()">Start</button>
+    </div>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+const API = '';
+let state = { view:'home', exam:null, subject:null, chapter:null, questions:[], qIndex:0, mock:null, timerInt:null };
+const LS = { bookmarks:'pyq_bm', attempts:'pyq_attempts' };
+const getBM = () => JSON.parse(localStorage.getItem(LS.bookmarks)||'[]');
+const setBM = v => localStorage.setItem(LS.bookmarks, JSON.stringify(v));
+const getAtt = () => JSON.parse(localStorage.getItem(LS.attempts)||'[]');
+const setAtt = v => localStorage.setItem(LS.attempts, JSON.stringify(v));
+
+function toast(msg){ const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),2400); }
+function esc(s){ return String(s??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+async function api(path){ const r=await fetch(API+path); if(!r.ok) throw new Error(r.statusText); return r.json(); }
+async function apiPost(path, body){ const r=await fetch(API+path,{method:'POST',body}); if(!r.ok){let m=r.statusText;try{const d=await r.json();m=d.detail||m;}catch{} throw new Error(m);} return r.json(); }
+
+function route(view, params={}){
+  state.view=view;
+  if(params.exam!==undefined) state.exam=params.exam;
+  if(params.subject!==undefined) state.subject=params.subject;
+  if(params.chapter!==undefined) state.chapter=params.chapter;
+  document.querySelectorAll('[data-nav]').forEach(b=>b.classList.toggle('active', b.dataset.nav===view));
+  render();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function render(){
+  const v=document.getElementById('view');
+  if(state.view==='home') renderHome(v);
+  else if(state.view==='exam') renderExam(v);
+  else if(state.view==='practice') renderPractice(v);
+  else if(state.view==='mock') renderMock(v);
+  else if(state.view==='results') renderResults(v);
+  else if(state.view==='bookmarks') renderBookmarks(v);
+  else if(state.view==='progress') renderProgress(v);
+  else if(state.view==='papers') renderPapers(v);
+}
+
+// ---------- HOME ----------
+async function renderHome(v){
+  v.innerHTML = `<div class="hero"><h2>Practice previous year questions</h2><p>Exam-wise, chapter-wise and mock tests. Free, no login. Progress saved locally.</p>
+    <button class="btn btn-primary" onclick="openMock()">Start Mock Test</button></div>
+    <div class="stats" id="stats"></div>
+    <div class="searchbar"><input id="search" placeholder="Search exams…" oninput="filterExams()" /></div>
+    <div id="examGrid" class="grid"></div>`;
+  const st=await api('/api/stats');
+  document.getElementById('stats').innerHTML = `
+    <div class="stat"><div class="n">${st.exams}</div><div class="l">Exams</div></div>
+    <div class="stat"><div class="n">${st.papers}</div><div class="l">Papers</div></div>
+    <div class="stat"><div class="n">${st.questions}</div><div class="l">Questions</div></div>
+    <div class="stat"><div class="n">${st.attempts}</div><div class="l">Attempts</div></div>`;
+  window._exams = await api('/api/exams');
+  filterExams();
+}
+function filterExams(){
+  const q=(document.getElementById('search')?.value||'').toLowerCase();
+  const exams=window._exams||[];
+  const filtered = q? exams.filter(e=>e.name.toLowerCase().includes(q)||e.category.toLowerCase().includes(q)) : exams;
+  // group by category
+  const groups={};
+  filtered.forEach(e=>{ (groups[e.category]=groups[e.category]||[]).push(e); });
+  const grid=document.getElementById('examGrid');
+  grid.innerHTML = Object.keys(groups).map(cat=>`
+    <div style="grid-column:1/-1"><div class="section-title">${esc(cat)}</div></div>
+    ${groups[cat].map(e=>`
+      <div class="card" onclick="openExam('${e.id}')">
+        <div class="icon">${e.icon||'📄'}</div>
+        <h3>${esc(e.name)}</h3>
+        <p>${esc(e.description||'')}</p>
+        <div class="meta"><span>${e.question_count} Qs</span><span>${e.paper_count} papers</span></div>
+      </div>`).join('')}`).join('');
+}
+
+function openExam(id){ state.exam=id; state.subject=null; state.chapter=null; route('exam'); }
+
+// ---------- EXAM ----------
+async function renderExam(v){
+  const e=await api('/api/exams/'+state.exam);
+  v.innerHTML = `<div style="display:flex;align-items:center;gap:12px;margin-bottom:14px">
+    <button class="btn btn-ghost btn-sm" onclick="route('home')">← Back</button>
+    <div><h2 style="margin:0">${e.icon||''} ${esc(e.name)}</h2><p style="margin:2px 0 0;color:var(--muted);font-size:12px">${esc(e.description||'')}</p></div>
+  </div>
+  <div class="tabs">
+    <div class="tab active" data-tab="papers" onclick="switchExamTab(this,'papers')">Papers</div>
+    <div class="tab" data-tab="practice" onclick="switchExamTab(this,'practice')">Practice</div>
+    <div class="tab" data-tab="mock" onclick="switchExamTab(this,'mock')">Mock Test</div>
+  </div>
+  <div id="examTab"></div>`;
+  window._exam=e;
+  switchExamTab(document.querySelector('.tab.active'),'papers');
+}
+function switchExamTab(el,tab){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  const c=document.getElementById('examTab');
+  if(tab==='papers') renderExamPapers(c);
+  else if(tab==='practice') renderExamPractice(c);
+  else if(tab==='mock') renderExamMock(c);
+}
+async function renderExamPapers(c){
+  const papers=await api('/api/papers?exam_id='+state.exam);
+  if(!papers.length){ c.innerHTML='<div class="empty">No papers yet. Upload one or import from URL.</div>'; return; }
+  c.innerHTML = `<div class="section-title">Previous Year Papers</div>` + papers.map(p=>`
+    <div class="paper-row">
+      <div><div class="t">${esc(p.title)}</div><div class="m">${p.year||''} ${p.shift?'· '+esc(p.shift):''} ${p.subject?'· '+esc(p.subject):''}</div></div>
+      <div style="display:flex;gap:6px">
+        ${p.download_url?`<a class="btn btn-ghost btn-sm" href="${p.download_url}" target="_blank">Download</a>`:''}
+        ${p.source_url?`<a class="btn btn-ghost btn-sm" href="${esc(p.source_url)}" target="_blank">Source</a>`:''}
+      </div>
+    </div>`).join('');
+}
+async function renderExamPractice(c){
+  const e=window._exam;
+  const chapters=await api('/api/chapters?exam_id='+state.exam);
+  const subjects=Object.keys(chapters);
+  if(!subjects.length){ c.innerHTML='<div class="empty">No questions yet for this exam.</div>'; return; }
+  // subject chips
+  let html = `<div class="chips" id="subjChips">`;
+  html += `<div class="chip active" onclick="filterPracticeSubject('')">All subjects</div>`;
+  subjects.forEach(s=>{ html += `<div class="chip" onclick="filterPracticeSubject('${esc(s)}')">${esc(s)}</div>`; });
+  html += `</div><div id="chapterList"></div><div id="practiceArea"></div>`;
+  c.innerHTML=html;
+  window._chapters=chapters;
+  window._practiceSubject='';
+  renderChapterList();
+}
+function filterPracticeSubject(subj){
+  document.querySelectorAll('#subjChips .chip').forEach(ch=>ch.classList.toggle('active', ch.textContent===(subj||'All subjects')));
+  window._practiceSubject=subj;
+  renderChapterList();
+}
+function renderChapterList(){
+  const chapters=window._chapters||{};
+  const subj=window._practiceSubject;
+  const list=document.getElementById('chapterList');
+  let html='';
+  Object.keys(chapters).forEach(s=>{
+    if(subj && s!==subj) return;
+    html += `<div class="section-title">${esc(s)}</div>`;
+    chapters[s].forEach(ch=>{
+      html += `<div class="paper-row" style="cursor:pointer" onclick="startPractice('${esc(s)}','${esc(ch.chapter)}')">
+        <div><div class="t">${esc(ch.chapter||'Miscellaneous')}</div><div class="m">${ch.count} questions</div></div>
+        <button class="btn btn-primary btn-sm">Practice</button>
+      </div>`;
+    });
+  });
+  list.innerHTML=html||'<div class="empty">No chapters.</div>';
+}
+async function startPractice(subject, chapter){
+  const data=await api(`/api/questions?exam_id=${state.exam}&subject=${encodeURIComponent(subject)}&chapter=${encodeURIComponent(chapter)}&limit=100`);
+  state.questions=data.items;
+  state.qIndex=0;
+  state.subject=subject; state.chapter=chapter;
+  route('practice');
+}
+async function renderPractice(v){
+  if(!state.questions.length){ v.innerHTML='<div class="empty">No questions loaded.</div><button class="btn btn-ghost" onclick="route(\'exam\')">Back</button>'; return; }
+  const q=state.questions[state.qIndex];
+  const bm=getBM().includes(q.id);
+  v.innerHTML = `
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;flex-wrap:wrap">
+      <button class="btn btn-ghost btn-sm" onclick="route('exam')">← Back</button>
+      <span style="color:var(--muted);font-size:13px">${esc(state.subject)} · ${esc(state.chapter||'')} · Q ${state.qIndex+1}/${state.questions.length}</span>
+      <button class="bm-btn ${bm?'on':''}" onclick="toggleBM('${q.id}')" title="Bookmark">★</button>
+    </div>
+    <div class="qcard">
+      <div class="qhead"><span>${esc(q.subject)} · ${q.year||''} · ${esc(q.difficulty||'')}</span><span>${esc(q.topic||'')}</span></div>
+      <div class="qtext">${esc(q.question)}</div>
+      <div class="opts" id="opts">
+        ${['a','b','c','d'].map(L=>`<div class="opt" data-l="${L}" onclick="answerPractice('${L}')"><span class="letter">${L.toUpperCase()}</span><span>${esc(q['option_'+L])}</span></div>`).join('')}
+      </div>
+      <div class="exp" id="exp"><b>Answer: ${q.correct}</b><br/>${esc(q.explanation||'No explanation.')}</div>
+      <div class="qactions">
+        <button class="btn btn-ghost btn-sm" onclick="prevQ()">← Prev</button>
+        <button class="btn btn-ghost btn-sm" onclick="nextQ()">Next →</button>
+        <button class="btn btn-ghost btn-sm" onclick="showExp()">Show answer</button>
+      </div>
+    </div>`;
+}
+function answerPractice(L){
+  const q=state.questions[state.qIndex];
+  const opts=document.querySelectorAll('#opts .opt');
+  opts.forEach(o=>{
+    o.classList.add('disabled');
+    const l=o.dataset.l;
+    if(l===q.correct.toLowerCase()) o.classList.add('correct');
+    if(l===L && L!==q.correct.toLowerCase()) o.classList.add('wrong');
+  });
+  document.getElementById('exp').classList.add('show');
+}
+function showExp(){ document.getElementById('exp').classList.add('show'); }
+function prevQ(){ if(state.qIndex>0){state.qIndex--; renderPractice(document.getElementById('view'));} }
+function nextQ(){ if(state.qIndex<state.questions.length-1){state.qIndex++; renderPractice(document.getElementById('view'));} }
+function toggleBM(id){
+  const b=getBM();
+  const i=b.indexOf(id);
+  if(i>=0) b.splice(i,1); else b.push(id);
+  setBM(b);
+  toast(i>=0?'Removed bookmark':'Bookmarked');
+  render();
+}
+
+// ---------- MOCK ----------
+function openMock(){ document.getElementById('mockModal').classList.add('open'); populateMockExams(); }
+function closeMock(){ document.getElementById('mockModal').classList.remove('open'); }
+async function populateMockExams(){
+  const exams=await api('/api/exams');
+  const sel=document.getElementById('m_exam');
+  sel.innerHTML=exams.map(e=>`<option value="${e.id}">${esc(e.name)}</option>`).join('');
+}
+async function startMock(){
+  const exam=document.getElementById('m_exam').value;
+  const subjects=document.getElementById('m_subjects').value.trim();
+  const count=parseInt(document.getElementById('m_count').value)||20;
+  const time=parseInt(document.getElementById('m_time').value)||30;
+  const diff=document.getElementById('m_diff').value;
+  const qs=await api(`/api/mock?exam_id=${exam}&subjects=${encodeURIComponent(subjects)}&count=${count}&difficulty=${diff}`);
+  if(!qs.length){ toast('No questions available'); return; }
+  closeMock();
+  state.mock = { exam, questions: qs, answers: Array(qs.length).fill(null), marked: Array(qs.length).fill(false), index:0, timeLeft: time*60, started: Date.now() };
+  if(state.timerInt) clearInterval(state.timerInt);
+  state.timerInt=setInterval(tickTimer,1000);
+  route('mock');
+}
+function tickTimer(){
+  if(!state.mock) return;
+  state.mock.timeLeft--;
+  const el=document.getElementById('timer');
+  if(el){
+    const m=Math.floor(state.mock.timeLeft/60), s=state.mock.timeLeft%60;
+    el.textContent=`${m}:${s.toString().padStart(2,'0')}`;
+    if(state.mock.timeLeft<=0){ clearInterval(state.timerInt); submitMock(); }
+  }
+}
+function renderMock(v){
+  const m=state.mock;
+  if(!m){ v.innerHTML='<div class="empty">No mock running. <button class="btn btn-primary" onclick="openMock()">Start</button></div>'; return; }
+  const q=m.questions[m.index];
+  v.innerHTML = `
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;flex-wrap:wrap">
+      <button class="btn btn-ghost btn-sm" onclick="quitMock()">Quit</button>
+      <span style="color:var(--muted);font-size:13px">Question ${m.index+1}/${m.questions.length}</span>
+      <span style="margin-left:auto" class="timer" id="timer">${Math.floor(m.timeLeft/60)}:${(m.timeLeft%60).toString().padStart(2,'0')}</span>
+    </div>
+    <div class="mock-layout">
+      <div class="qcard">
+        <div class="qhead"><span>${esc(q.subject)} · ${q.year||''}</span><span>${esc(q.chapter||'')}</span></div>
+        <div class="qtext">${esc(q.question)}</div>
+        <div class="opts">
+          ${['a','b','c','d'].map(L=>`<div class="opt ${m.answers[m.index]===L?'selected':''}" data-l="${L}" onclick="selectMock('${L}')"><span class="letter">${L.toUpperCase()}</span><span>${esc(q['option_'+L])}</span></div>`).join('')}
+        </div>
+        <div class="qactions">
+          <button class="btn btn-ghost btn-sm" onclick="markMock()">${m.marked[m.index]?'Unmark':'Mark for review'}</button>
+          <button class="btn btn-ghost btn-sm" onclick="clearMock()">Clear</button>
+          <button class="btn btn-ghost btn-sm" onclick="prevMock()">← Prev</button>
+          <button class="btn btn-primary btn-sm" onclick="nextMock()">Next →</button>
+        </div>
+      </div>
+      <div class="palette">
+        <h4>Question Palette</h4>
+        <div class="pgrid">
+          ${m.questions.map((_,i)=>`<button class="pbtn ${m.answers[i]?'answered':''} ${m.marked[i]?'marked':''} ${i===m.index?'current':''}" onclick="gotoMock(${i})">${i+1}</button>`).join('')}
+        </div>
+        <div style="margin-top:10px;display:flex;flex-direction:column;gap:6px">
+          <button class="btn btn-ok" style="width:100%" onclick="submitMock()">Submit Test</button>
+        </div>
+        <div style="font-size:11px;color:var(--muted);margin-top:8px">
+          <span style="display:inline-block;width:10px;height:10px;background:var(--accent);border-radius:2px;margin-right:4px"></span>Answered
+          <span style="display:inline-block;width:10px;height:10px;background:var(--warn);border-radius:2px;margin:0 4px 0 8px"></span>Marked
+        </div>
+      </div>
+    </div>`;
+}
+function selectMock(L){ state.mock.answers[state.mock.index]=L; renderMock(document.getElementById('view')); }
+function clearMock(){ state.mock.answers[state.mock.index]=null; renderMock(document.getElementById('view')); }
+function markMock(){ state.mock.marked[state.mock.index]=!state.mock.marked[state.mock.index]; renderMock(document.getElementById('view')); }
+function prevMock(){ if(state.mock.index>0){state.mock.index--;renderMock(document.getElementById('view'));} }
+function nextMock(){ if(state.mock.index<state.mock.questions.length-1){state.mock.index++;renderMock(document.getElementById('view'));} }
+function gotoMock(i){ state.mock.index=i; renderMock(document.getElementById('view')); }
+function quitMock(){ if(confirm('Quit mock? Progress lost.')){ clearInterval(state.timerInt); state.mock=null; route('home'); } }
+function submitMock(){
+  clearInterval(state.timerInt);
+  const m=state.mock;
+  let score=0, correct=0, wrong=0, skip=0;
+  m.questions.forEach((q,i)=>{
+    const a=m.answers[i];
+    if(!a) skip++;
+    else if(a.toUpperCase()===q.correct.toUpperCase()) { score+=1; correct++; }
+    else { score-=0.25; wrong++; }
+  });
+  const timeTaken = (m.time*60) - m.timeLeft;
+  // save attempt
+  apiPost('/api/attempts', new URLSearchParams({exam_id:m.exam, mode:'mock', score:Math.round(score*100)/100, total:m.questions.length, time_taken:timeTaken})).catch(()=>{});
+  const att=getAtt(); att.unshift({exam:m.exam, mode:'mock', score, total:m.questions.length, correct, wrong, skip, timeTaken, date:new Date().toISOString(), questions:m.questions, answers:m.answers}); setAtt(att.slice(0,20));
+  state.mockResult={...m, score, correct, wrong, skip, timeTaken};
+  state.mock=null;
+  route('results');
+}
+
+// ---------- RESULTS ----------
+function renderResults(v){
+  const r=state.mockResult;
+  if(!r){ v.innerHTML='<div class="empty">No result. <button class="btn btn-primary" onclick="openMock()">Start mock</button></div>'; return; }
+  const pct=Math.round((r.correct/r.questions.length)*100);
+  v.innerHTML = `
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
+      <button class="btn btn-ghost btn-sm" onclick="route('home')">← Home</button>
+    </div>
+    <div class="result-card">
+      <div class="big">${pct}%</div>
+      <p style="color:var(--muted);margin:6px 0">${r.correct} correct · ${r.wrong} wrong · ${r.skip} skipped · Score ${r.score.toFixed(2)}/${r.questions.length}</p>
+      <p style="color:var(--muted);font-size:12px">Time: ${Math.floor(r.timeTaken/60)}m ${r.timeTaken%60}s</p>
+    </div>
+    <div class="section-title">Review</div>
+    ${r.questions.map((q,i)=>{
+      const a=r.answers[i];
+      const ok = a && a.toUpperCase()===q.correct.toUpperCase();
+      const cls = !a?'skip':(ok?'ok':'err');
+      const label = !a?'Skipped':(ok?'Correct':'Wrong');
+      return `<div class="review-item">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+          <span style="font-size:12px;color:var(--muted)">Q${i+1} · ${esc(q.subject)} · ${esc(q.chapter||'')}</span>
+          <span class="badge ${cls}">${label}</span>
+        </div>
+        <div class="q">${esc(q.question)}</div>
+        <div style="font-size:13px;color:var(--muted)">Your: ${a?a.toUpperCase():'—'} · Correct: ${q.correct}</div>
+        <div style="font-size:13px;margin-top:6px">${esc(q.explanation||'')}</div>
+      </div>`;
+    }).join('')}`;
+}
+
+// ---------- BOOKMARKS ----------
+async function renderBookmarks(v){
+  const ids=getBM();
+  if(!ids.length){ v.innerHTML='<div class="empty">No bookmarks yet. Star questions while practicing.</div>'; return; }
+  // fetch each question by id? We don't have bulk endpoint; fetch all questions for exams and filter. Simpler: store question objects? We'll fetch from a special approach: get questions with no filter large. Instead, fetch all exams questions.
+  // Build cache
+  if(!window._allQs){
+    const exams=await api('/api/exams');
+    let all=[];
+    for(const e of exams){
+      const d=await api(`/api/questions?exam_id=${e.id}&limit=500`);
+      all=all.concat(d.items);
+    }
+    window._allQs=all;
+  }
+  const qs=window._allQs.filter(q=>ids.includes(q.id));
+  v.innerHTML = `<div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
+    <button class="btn btn-ghost btn-sm" onclick="route('home')">← Home</button>
+    <h2 style="margin:0">Bookmarks (${qs.length})</h2>
+  </div>` + qs.map(q=>`
+    <div class="qcard">
+      <div class="qhead"><span>${esc(q.subject)} · ${q.year||''}</span><button class="bm-btn on" onclick="toggleBM('${q.id}')">★</button></div>
+      <div class="qtext">${esc(q.question)}</div>
+      <div class="opts">${['a','b','c','d'].map(L=>`<div class="opt ${L===q.correct.toLowerCase()?'correct':''}"><span class="letter">${L.toUpperCase()}</span><span>${esc(q['option_'+L])}</span></div>`).join('')}</div>
+      <div class="exp show"><b>Answer: ${q.correct}</b><br/>${esc(q.explanation||'')}</div>
+    </div>`).join('');
+}
+
+// ---------- PROGRESS ----------
+function renderProgress(v){
+  const att=getAtt();
+  v.innerHTML = `<div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
+    <button class="btn btn-ghost btn-sm" onclick="route('home')">← Home</button>
+    <h2 style="margin:0">Progress</h2>
+  </div>
+  <div class="stats">
+    <div class="stat"><div class="n">${att.length}</div><div class="l">Attempts</div></div>
+    <div class="stat"><div class="n">${att.length?Math.round(att.reduce((a,b)=>a+b.score,0)/att.length*10)/10:0}</div><div class="l">Avg score</div></div>
+    <div class="stat"><div class="n">${getBM().length}</div><div class="l">Bookmarks</div></div>
+  </div>
+  <div class="section-title">Recent attempts</div>
+  ${att.length? att.map(a=>`
+    <div class="paper-row">
+      <div><div class="t">${esc(a.exam)} · ${esc(a.mode)}</div><div class="m">${new Date(a.date).toLocaleString()} · ${a.correct}/${a.total} correct · ${Math.floor(a.timeTaken/60)}m</div></div>
+      <div class="badge ${a.score/a.total>=0.6?'ok':'err'}">${Math.round(a.score/a.total*100)}%</div>
+    </div>`).join('') : '<div class="empty">No attempts yet.</div>'}`;
+}
+
+// ---------- PAPERS ----------
+async function renderPapers(v){
+  // not a top-level route currently; unused
+}
+
+// init
+route('home');
+</script>
+</body>
+</html>
