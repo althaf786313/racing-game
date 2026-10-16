@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Question Paper Hub — All Previous Papers in One Place</title>
+<style>
+  :root {
+    --bg:#0b1020; --panel:#151b2e; --panel2:#1e2740; --text:#e6ecf5; --muted:#8b97b3;
+    --accent:#7c5cff; --accent2:#22d3ee; --ok:#10b981; --warn:#f59e0b; --err:#ef4444; --border:#2a3350;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:'Inter',system-ui,-apple-system,Segoe UI,Roboto,sans-serif;background:linear-gradient(160deg,#0b1020 0%,#1a1340 100%);color:var(--text);min-height:100vh}
+  .wrap{max-width:1280px;margin:0 auto;padding:20px}
+  header{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:18px}
+  .brand{display:flex;align-items:center;gap:12px}
+  .logo{width:46px;height:46px;border-radius:14px;background:linear-gradient(135deg,var(--accent),var(--accent2));display:grid;place-items:center;font-weight:800;font-size:20px}
+  h1{margin:0;font-size:24px} header p{margin:4px 0 0;color:var(--muted);font-size:13px}
+  .stats{display:flex;gap:10px;flex-wrap:wrap}
+  .stat{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:10px 14px;min-width:90px}
+  .stat .n{font-size:20px;font-weight:700;color:var(--accent2)} .stat .l{font-size:11px;color:var(--muted)}
+  .toolbar{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px;align-items:center}
+  .search{flex:1;min-width:240px;display:flex;gap:8px}
+  .search input{flex:1;padding:11px 14px;border-radius:12px;border:1px solid var(--border);background:var(--panel);color:var(--text);font-size:14px}
+  select{padding:11px 12px;border-radius:12px;border:1px solid var(--border);background:var(--panel);color:var(--text);font-size:14px}
+  button{cursor:pointer;border:none;border-radius:12px;padding:11px 16px;font-weight:600;font-size:14px}
+  .btn-primary{background:linear-gradient(135deg,var(--accent),#a78bfa);color:#fff}
+  .btn-ghost{background:var(--panel);color:var(--text);border:1px solid var(--border)}
+  .btn-sm{padding:7px 12px;font-size:12px;border-radius:8px}
+  .tabs{display:flex;gap:6px;margin-bottom:14px;flex-wrap:wrap}
+  .tab{padding:8px 16px;border-radius:999px;background:var(--panel);border:1px solid var(--border);color:var(--muted);cursor:pointer;font-size:13px;font-weight:600}
+  .tab.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+  .chips{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px}
+  .chip{padding:6px 12px;border-radius:999px;background:var(--panel2);border:1px solid var(--border);color:var(--muted);cursor:pointer;font-size:12px}
+  .chip.active{background:var(--accent2);color:#0b1020;border-color:var(--accent2)}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px}
+  .card{background:var(--panel);border:1px solid var(--border);border-radius:16px;padding:16px;display:flex;flex-direction:column;gap:8px;transition:.15s}
+  .card:hover{border-color:var(--accent);transform:translateY(-2px)}
+  .card .type{display:inline-block;font-size:10px;font-weight:700;padding:3px 8px;border-radius:999px;background:#2a2250;color:#c7b8ff;text-transform:uppercase;letter-spacing:.5px}
+  .card .type.competitive{background:#1f3328;color:#7ee0a8}
+  .card h3{margin:4px 0 2px;font-size:15px;line-height:1.3}
+  .card .meta{font-size:12px;color:var(--muted);display:flex;flex-wrap:wrap;gap:6px}
+  .card .meta span{background:var(--panel2);padding:2px 8px;border-radius:6px}
+  .card .actions{display:flex;gap:8px;margin-top:auto;padding-top:8px}
+  .card .actions a,.card .actions button{flex:1;text-align:center;text-decoration:none}
+  .empty{grid-column:1/-1;text-align:center;padding:40px;color:var(--muted)}
+  .modal-back{position:fixed;inset:0;background:rgba(0,0,0,.6);display:none;align-items:center;justify-content:center;z-index:50;padding:20px}
+  .modal-back.open{display:flex}
+  .modal{background:var(--panel);border:1px solid var(--border);border-radius:18px;padding:22px;width:100%;max-width:520px;max-height:90vh;overflow:auto}
+  .modal h2{margin:0 0 12px}
+  .modal label{display:block;font-size:12px;color:var(--muted);margin:10px 0 4px}
+  .modal input,.modal select,.modal textarea{width:100%;padding:10px 12px;border-radius:10px;border:1px solid var(--border);background:var(--panel2);color:var(--text);font-size:14px}
+  .modal textarea{min-height:70px}
+  .modal .row{display:flex;gap:10px;justify-content:flex-end;margin-top:14px}
+  .toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--panel);border:1px solid var(--border);padding:10px 16px;border-radius:10px;display:none;z-index:60}
+  .toast.show{display:block}
+  .pager{display:flex;gap:8px;justify-content:center;margin-top:18px}
+  .req-list{margin-top:14px}
+  .req-item{background:var(--panel2);border:1px solid var(--border);border-radius:10px;padding:10px 12px;margin-bottom:8px;font-size:13px}
+  footer{margin-top:24px;text-align:center;color:var(--muted);font-size:12px}
+  .hidden{display:none}
+  @media(max-width:600px){.stats{width:100%}.stat{flex:1}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="brand">
+      <div class="logo">Q</div>
+      <div>
+        <h1>Question Paper Hub</h1>
+        <p>All previous question papers — academic & competitive exams — in one place.</p>
+      </div>
+    </div>
+    <div class="stats" id="stats"></div>
+  </header>
+
+  <div class="toolbar">
+    <div class="search">
+      <input id="q" placeholder="Search by exam, subject, topic…" oninput="debounceLoad()" />
+    </div>
+    <select id="examFilter" onchange="loadPapers()"><option value="">All exams</option></select>
+    <select id="yearFilter" onchange="loadPapers()"><option value="">All years</option></select>
+    <button class="btn-primary" onclick="openUpload()">+ Upload paper</button>
+    <button class="btn-ghost" onclick="openRequest()">Request a paper</button>
+    <button class="btn-ghost" onclick="openImport()">Import from URL</button>
+  </div>
+
+  <div class="tabs">
+    <div class="tab active" data-type="" onclick="setType(this,'')">All</div>
+    <div class="tab" data-type="Academic" onclick="setType(this,'Academic')">Academic</div>
+    <div class="tab" data-type="Competitive" onclick="setType(this,'Competitive')">Competitive</div>
+  </div>
+
+  <div class="chips" id="examChips"></div>
+
+  <div class="grid" id="grid"></div>
+  <div class="pager" id="pager"></div>
+
+  <div style="margin-top:28px">
+    <h2 style="font-size:16px;color:var(--accent2)">Requested papers</h2>
+    <div class="req-list" id="reqList"></div>
+  </div>
+
+  <footer>Community-driven. Upload a paper to help others. Files are stored on the server.</footer>
+</div>
+
+<!-- Upload modal -->
+<div class="modal-back" id="uploadModal">
+  <div class="modal">
+    <h2>Upload a question paper</h2>
+    <label>Title *</label><input id="u_title" placeholder="e.g. JEE Main 2024 Shift 1" />
+    <label>Exam type *</label>
+    <select id="u_type"><option>Competitive</option><option>Academic</option></select>
+    <label>Exam name *</label><input id="u_exam" placeholder="e.g. JEE Main / B.Tech CSE Sem 3" />
+    <label>Subject</label><input id="u_subject" placeholder="e.g. Physics, Chemistry, Maths" />
+    <label>Year</label><input id="u_year" type="number" placeholder="2024" />
+    <label>Semester (academic)</label><input id="u_sem" placeholder="3" />
+    <label>University / Board</label><input id="u_uni" placeholder="e.g. CBSE, IIT" />
+    <label>Source URL (optional)</label><input id="u_src" placeholder="https://..." />
+    <label>Your name (optional)</label><input id="u_by" placeholder="anonymous" />
+    <label>PDF file *</label><input id="u_file" type="file" accept="application/pdf" />
+    <div class="row">
+      <button class="btn-ghost" onclick="closeUpload()">Cancel</button>
+      <button class="btn-primary" onclick="doUpload()">Upload</button>
+    </div>
+  </div>
+</div>
+
+<!-- Request modal -->
+<div class="modal-back" id="requestModal">
+  <div class="modal">
+    <h2>Request a paper</h2>
+    <label>Exam name *</label><input id="r_exam" placeholder="e.g. NEET 2022" />
+    <label>Subject</label><input id="r_subject" placeholder="Biology" />
+    <label>Year</label><input id="r_year" type="number" placeholder="2022" />
+    <label>Note</label><textarea id="r_note" placeholder="Any details…"></textarea>
+    <div class="row">
+      <button class="btn-ghost" onclick="closeRequest()">Cancel</button>
+      <button class="btn-primary" onclick="doRequest()">Submit request</button>
+    </div>
+  </div>
+</div>
+
+<!-- Import modal -->
+<div class="modal-back" id="importModal">
+  <div class="modal">
+    <h2>Import a paper from URL</h2>
+    <p style="color:var(--muted);font-size:12px">Paste a direct PDF link (e.g. from an official exam site). The server will fetch and store it.</p>
+    <label>Title *</label><input id="i_title" placeholder="e.g. UPSC Prelims 2024 GS1" />
+    <label>Exam type *</label><select id="i_type"><option>Competitive</option><option>Academic</option></select>
+    <label>Exam name *</label><input id="i_exam" placeholder="UPSC CSE" />
+    <label>Subject</label><input id="i_subject" placeholder="General Studies" />
+    <label>Year</label><input id="i_year" type="number" placeholder="2024" />
+    <label>PDF URL *</label><input id="i_url" placeholder="https://.../paper.pdf" />
+    <label>Your name (optional)</label><input id="i_by" placeholder="community" />
+    <div class="row">
+      <button class="btn-ghost" onclick="closeImport()">Cancel</button>
+      <button class="btn-primary" onclick="doImport()">Import</button>
+    </div>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+let state = { type: '', exam: '', year: '', q: '', page: 1 };
+let debounceTimer;
+
+function toast(msg){ const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),2600); }
+
+async function loadStats(){
+  const r = await fetch('/api/stats'); const d = await r.json();
+  document.getElementById('stats').innerHTML = `
+    <div class="stat"><div class="n">${d.total}</div><div class="l">Papers</div></div>
+    <div class="stat"><div class="n">${d.exams}</div><div class="l">Exams</div></div>
+    <div class="stat"><div class="n">${d.academic}</div><div class="l">Academic</div></div>
+    <div class="stat"><div class="n">${d.competitive}</div><div class="l">Competitive</div></div>
+    <div class="stat"><div class="n">${d.downloads}</div><div class="l">Downloads</div></div>`;
+}
+
+async function loadExams(){
+  const r = await fetch('/api/exams'); const d = await r.json();
+  const sel = document.getElementById('examFilter');
+  // keep first
+  const opts = ['<option value="">All exams</option>'];
+  d.forEach(e => opts.push(`<option value="${esc(e.exam_name)}">${esc(e.exam_name)} (${e.count})</option>`));
+  sel.innerHTML = opts.join('');
+  // chips: top exams
+  const chips = document.getElementById('examChips');
+  chips.innerHTML = '';
+  const allChip = document.createElement('div');
+  allChip.className = 'chip active'; allChip.textContent = 'All exams'; allChip.onclick = () => filterExam('');
+  chips.appendChild(allChip);
+  d.slice(0,14).forEach(e => {
+    const c = document.createElement('div');
+    c.className = 'chip'; c.textContent = e.exam_name;
+    c.onclick = () => filterExam(e.exam_name);
+    chips.appendChild(c);
+  });
+}
+
+function filterExam(name){
+  state.exam = name;
+  document.getElementById('examFilter').value = name;
+  document.querySelectorAll('.chip').forEach(c => c.classList.toggle('active', c.textContent === (name||'All exams')));
+  loadPapers();
+}
+
+function setType(el, type){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  state.type = type;
+  loadPapers();
+}
+
+function debounceLoad(){ clearTimeout(debounceTimer); debounceTimer = setTimeout(()=>{ state.q = document.getElementById('q').value; state.page=1; loadPapers(); }, 300); }
+
+async function loadPapers(){
+  state.q = document.getElementById('q').value;
+  state.exam = document.getElementById('examFilter').value;
+  const y = document.getElementById('yearFilter').value;
+  state.year = y;
+  const params = new URLSearchParams();
+  if (state.q) params.set('q', state.q);
+  if (state.type) params.set('exam_type', state.type);
+  if (state.exam) params.set('exam_name', state.exam);
+  if (state.year) params.set('year', state.year);
+  params.set('page', state.page);
+  params.set('page_size', '24');
+  const r = await fetch('/api/papers?' + params.toString());
+  const d = await r.json();
+  renderGrid(d.items);
+  renderPager(d.total, d.page, d.page_size);
+  // populate year filter once
+  if (!document.getElementById('yearFilter').dataset.loaded) {
+    const years = [...new Set(d.items.map(i=>i.year).filter(Boolean))].sort((a,b)=>b-a);
+    // also fetch all to get years? use current; better fetch distinct via stats? We'll just add common years
+    const ys = [2024,2023,2022,2021,2020,2019];
+    const sel = document.getElementById('yearFilter');
+    sel.innerHTML = '<option value="">All years</option>' + ys.map(y=>`<option value="${y}">${y}</option>`).join('');
+    sel.dataset.loaded = '1';
+    if (state.year) sel.value = state.year;
+  }
+}
+
+function renderGrid(items){
+  const grid = document.getElementById('grid');
+  if (!items.length){ grid.innerHTML = '<div class="empty">No papers found. Try different filters or upload one.</div>'; return; }
+  grid.innerHTML = items.map(p => `
+    <div class="card">
+      <span class="type ${p.exam_type.toLowerCase()}">${esc(p.exam_type)}</span>
+      <h3>${esc(p.title)}</h3>
+      <div class="meta">
+        ${p.exam_name?`<span>${esc(p.exam_name)}</span>`:''}
+        ${p.subject?`<span>${esc(p.subject)}</span>`:''}
+        ${p.year?`<span>${p.year}</span>`:''}
+        ${p.semester?`<span>Sem ${esc(p.semester)}</span>`:''}
+        ${p.university?`<span>${esc(p.university)}</span>`:''}
+      </div>
+      <div class="meta" style="margin-top:4px">
+        <span>⬇ ${p.downloads} downloads</span>
+        ${p.uploaded_by?`<span>by ${esc(p.uploaded_by)}</span>`:''}
+      </div>
+      <div class="meta" style="margin-top:2px">
+        ${p.source_url?`<a href="${esc(p.source_url)}" target="_blank" rel="noopener" style="color:var(--accent2);font-size:11px">↗ Source</a>`:''}
+      </div>
+      <div class="actions">
+        <a class="btn-ghost btn-sm" href="/api/papers/${p.id}/download" target="_blank">Download PDF</a>
+        <button class="btn-ghost btn-sm" onclick="copyLink('${p.id}')">Copy link</button>
+      </div>
+    </div>`).join('');
+}
+
+function renderPager(total, page, size){
+  const pages = Math.ceil(total/size);
+  const el = document.getElementById('pager');
+  if (pages <= 1){ el.innerHTML = ''; return; }
+  let html = '';
+  if (page > 1) html += `<button class="btn-ghost btn-sm" onclick="goPage(${page-1})">Prev</button>`;
+  html += `<span style="padding:7px 12px;color:var(--muted);font-size:13px">Page ${page} of ${pages}</span>`;
+  if (page < pages) html += `<button class="btn-ghost btn-sm" onclick="goPage(${page+1})">Next</button>`;
+  el.innerHTML = html;
+}
+function goPage(p){ state.page = p; loadPapers(); window.scrollTo({top:0,behavior:'smooth'}); }
+
+function copyLink(id){
+  const url = location.origin + '/api/papers/' + id + '/download';
+  navigator.clipboard.writeText(url).then(()=>toast('Link copied'));
+}
+
+function openUpload(){ document.getElementById('uploadModal').classList.add('open'); }
+function closeUpload(){ document.getElementById('uploadModal').classList.remove('open'); }
+async function doUpload(){
+  const fd = new FormData();
+  fd.append('title', document.getElementById('u_title').value.trim());
+  fd.append('exam_type', document.getElementById('u_type').value);
+  fd.append('exam_name', document.getElementById('u_exam').value.trim());
+  fd.append('subject', document.getElementById('u_subject').value.trim());
+  fd.append('year', document.getElementById('u_year').value);
+  fd.append('semester', document.getElementById('u_sem').value.trim());
+  fd.append('university', document.getElementById('u_uni').value.trim());
+  fd.append('source_url', document.getElementById('u_src').value.trim());
+  fd.append('uploaded_by', document.getElementById('u_by').value.trim() || 'community');
+  const f = document.getElementById('u_file').files[0];
+  if (!f){ toast('Choose a PDF'); return; }
+  fd.append('file', f);
+  const r = await fetch('/api/papers', {method:'POST', body:fd});
+  if (!r.ok){ const d = await r.json().catch(()=>({})); toast('Upload failed: '+(d.detail||r.statusText)); return; }
+  closeUpload();
+  toast('Uploaded! Thanks for contributing.');
+  loadStats(); loadExams(); loadPapers();
+}
+
+function openRequest(){ document.getElementById('requestModal').classList.add('open'); }
+function closeRequest(){ document.getElementById('requestModal').classList.remove('open'); }
+async function doRequest(){
+  const fd = new FormData();
+  fd.append('exam_name', document.getElementById('r_exam').value.trim());
+  fd.append('subject', document.getElementById('r_subject').value.trim());
+  fd.append('year', document.getElementById('r_year').value);
+  fd.append('note', document.getElementById('r_note').value.trim());
+  const r = await fetch('/api/requests', {method:'POST', body:fd});
+  if (!r.ok){ toast('Request failed'); return; }
+  closeRequest();
+  toast('Request submitted.');
+  loadRequests();
+}
+async function loadRequests(){
+  const r = await fetch('/api/requests'); const d = await r.json();
+  const el = document.getElementById('reqList');
+  if (!d.length){ el.innerHTML = '<p style="color:var(--muted);font-size:13px">No requests yet.</p>'; return; }
+  el.innerHTML = d.map(x=>`<div class="req-item"><b>${esc(x.exam_name)}</b> ${x.subject?'· '+esc(x.subject):''} ${x.year?'· '+x.year:''} ${x.note?'— '+esc(x.note):''}</div>`).join('');
+}
+
+function openImport(){ document.getElementById('importModal').classList.add('open'); }
+function closeImport(){ document.getElementById('importModal').classList.remove('open'); }
+async function doImport(){
+  const fd = new FormData();
+  fd.append('title', document.getElementById('i_title').value.trim());
+  fd.append('exam_type', document.getElementById('i_type').value);
+  fd.append('exam_name', document.getElementById('i_exam').value.trim());
+  fd.append('subject', document.getElementById('i_subject').value.trim());
+  fd.append('year', document.getElementById('i_year').value);
+  fd.append('source_url', document.getElementById('i_url').value.trim());
+  fd.append('uploaded_by', document.getElementById('i_by').value.trim() || 'community');
+  const r = await fetch('/api/import-url', {method:'POST', body:fd});
+  if (!r.ok){ const d = await r.json().catch(()=>({})); toast('Import failed: '+(d.detail||r.statusText)); return; }
+  closeImport();
+  toast('Imported!');
+  loadStats(); loadExams(); loadPapers();
+}
+function esc(s){ return String(s??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+// init
+loadStats(); loadExams(); loadPapers(); loadRequests();
+</script>
+</body>
+</html>

@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>PastPaper → Anki</title>
+<style>
+  :root {
+    --bg: #0f172a; --panel: #1e293b; --panel2: #273449;
+    --text: #e2e8f0; --muted: #94a3b8; --accent: #6366f1;
+    --accent2: #22d3ee; --ok: #10b981; --warn: #f59e0b; --err: #ef4444;
+  }
+  * { box-sizing: border-box; }
+  body { margin:0; font-family: 'Inter', system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+         background: linear-gradient(135deg,#0f172a 0%,#1e1b4b 100%); color: var(--text); min-height:100vh; }
+  .wrap { max-width: 1100px; margin: 0 auto; padding: 24px; }
+  header { display:flex; align-items:center; gap:14px; margin-bottom: 20px; }
+  header h1 { margin:0; font-size: 26px; }
+  header p { margin:4px 0 0; color: var(--muted); font-size: 14px; }
+  .logo { width:42px;height:42px;border-radius:12px;background:linear-gradient(135deg,var(--accent),var(--accent2));
+          display:grid;place-items:center;font-weight:800;font-size:18px; }
+  .grid { display:grid; grid-template-columns: 1fr 1fr; gap:20px; }
+  @media (max-width:860px){ .grid{grid-template-columns:1fr;} }
+  .card { background: var(--panel); border:1px solid #334155; border-radius:16px; padding:20px; }
+  .card h2 { margin:0 0 12px; font-size:16px; color: var(--accent2); }
+  label { display:block; font-size:13px; color:var(--muted); margin:10px 0 4px; }
+  input, select, textarea { width:100%; padding:10px 12px; border-radius:10px; border:1px solid #334155;
+    background: var(--panel2); color: var(--text); font-size:14px; }
+  textarea { min-height: 80px; resize: vertical; }
+  button { cursor:pointer; border:none; border-radius:10px; padding:11px 16px; font-weight:600; font-size:14px; }
+  .btn-primary { background: linear-gradient(135deg,var(--accent),#8b5cf6); color:#fff; width:100%; margin-top:12px; }
+  .btn-primary:hover { filter: brightness(1.1); }
+  .btn-secondary { background: var(--panel2); color: var(--text); border:1px solid #334155; }
+  .drop { border:2px dashed #475569; border-radius:14px; padding:28px; text-align:center; color:var(--muted);
+           background: var(--panel2); transition:.2s; }
+  .drop.over { border-color: var(--accent); background:#1e293b; }
+  .drop input { display:none; }
+  .row { display:flex; gap:10px; align-items:center; }
+  .toggle { display:flex; align-items:center; gap:8px; margin-top:10px; font-size:13px; color:var(--muted); }
+  .toggle input { width:auto; }
+  .status { margin-top:10px; font-size:13px; min-height:18px; }
+  .ok { color: var(--ok); } .warn { color: var(--warn); } .err { color: var(--err); }
+  .preview { max-height: 420px; overflow:auto; margin-top:12px; }
+  .qcard { background: var(--panel2); border:1px solid #334155; border-radius:10px; padding:12px; margin-bottom:10px; }
+  .qcard .front { font-weight:600; margin-bottom:6px; white-space:pre-wrap; }
+  .qcard .back { color: var(--muted); font-size:13px; white-space:pre-wrap; }
+  .qcard .tags { margin-top:6px; }
+  .tag { display:inline-block; background:#312e81; color:#c7d2fe; font-size:11px; padding:2px 8px; border-radius:999px; margin-right:4px; }
+  .stats { display:flex; gap:12px; margin-top:10px; font-size:13px; color:var(--muted); }
+  .pill { background: var(--panel2); padding:4px 10px; border-radius:999px; border:1px solid #334155; }
+  .hidden { display:none; }
+  .spinner { display:inline-block; width:14px;height:14px;border:2px solid #475569;border-top-color:var(--accent);border-radius:50%;animation:spin .8s linear infinite; vertical-align:middle; margin-right:6px; }
+  @keyframes spin { to { transform:rotate(360deg);} }
+  footer { margin-top:24px; text-align:center; color:var(--muted); font-size:12px; }
+  a { color: var(--accent2); }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="logo">A</div>
+    <div>
+      <h1>PastPaper → Anki</h1>
+      <p>Upload a past exam paper PDF. Get a ready-to-import Anki deck. AI answers optional.</p>
+    </div>
+  </header>
+
+  <div class="grid">
+    <!-- Left: upload + settings -->
+    <div class="card">
+      <h2>1. Upload past paper</h2>
+      <div class="drop" id="drop">
+        <p>Drag & drop a PDF here, or click to choose</p>
+        <input type="file" id="file" accept="application/pdf" />
+        <button class="btn-secondary" onclick="document.getElementById('file').click()">Choose PDF</button>
+        <div id="fname" style="margin-top:8px;font-size:13px;color:var(--accent2)"></div>
+        <div style="margin-top:8px;font-size:12px;color:var(--muted)">No PDF? <a href="/static/demo.pdf" download>download a sample past paper</a> to try.</div>
+      </div>
+
+      <h2 style="margin-top:18px">2. Settings</h2>
+      <label>Deck name</label>
+      <input id="deckName" value="Past Paper Deck" />
+
+      <label>AI provider (optional)</label>
+      <select id="provider">
+        <option value="openai">OpenAI (gpt-4o-mini)</option>
+        <option value="anthropic">Anthropic (claude-3-5-haiku)</option>
+      </select>
+      <label>API key (stored only in your browser)</label>
+      <input id="apiKey" type="password" placeholder="sk-... (leave empty for question-only cards)" />
+      <label>Model override (optional)</label>
+      <input id="model" placeholder="gpt-4o-mini" />
+
+      <div class="toggle">
+        <input type="checkbox" id="useLlm" />
+        <span>Use AI to clean questions + generate answers & tags</span>
+      </div>
+
+      <button class="btn-primary" id="genBtn" onclick="generate()">Generate Anki Deck (.apkg)</button>
+      <button class="btn-secondary" style="width:100%;margin-top:8px" onclick="preview()">Preview extracted questions</button>
+
+      <div class="status" id="status"></div>
+    </div>
+
+    <!-- Right: preview -->
+    <div class="card">
+      <h2>Preview</h2>
+      <div class="stats" id="stats"></div>
+      <div class="preview" id="preview"></div>
+    </div>
+  </div>
+
+  <footer>
+    Built for students. Your PDF is processed on the server and not stored. API key never leaves your browser except to the provider you choose.
+  </footer>
+</div>
+
+<script>
+const drop = document.getElementById('drop');
+const fileInput = document.getElementById('file');
+let selectedFile = null;
+
+drop.addEventListener('dragover', e => { e.preventDefault(); drop.classList.add('over'); });
+drop.addEventListener('dragleave', () => drop.classList.remove('over'));
+drop.addEventListener('drop', e => {
+  e.preventDefault(); drop.classList.remove('over');
+  if (e.dataTransfer.files.length) { selectedFile = e.dataTransfer.files[0]; showFile(); }
+});
+fileInput.addEventListener('change', e => { if (e.target.files.length) { selectedFile = e.target.files[0]; showFile(); } });
+function showFile() {
+  document.getElementById('fname').textContent = selectedFile.name + ' (' + (selectedFile.size/1024).toFixed(1) + ' KB)';
+}
+
+function status(msg, cls='') {
+  const el = document.getElementById('status');
+  el.innerHTML = msg; el.className = 'status ' + cls;
+}
+
+function buildForm() {
+  const fd = new FormData();
+  fd.append('file', selectedFile);
+  fd.append('provider', document.getElementById('provider').value);
+  fd.append('api_key', document.getElementById('apiKey').value);
+  fd.append('model', document.getElementById('model').value);
+  fd.append('deck_name', document.getElementById('deckName').value);
+  fd.append('use_llm', document.getElementById('useLlm').checked ? 'true' : 'false');
+  return fd;
+}
+
+async function preview() {
+  if (!selectedFile) { status('Please choose a PDF first.', 'warn'); return; }
+  status('<span class="spinner"></span>Extracting…');
+  try {
+    const res = await fetch('/api/preview', { method:'POST', body: buildForm() });
+    const data = await res.json();
+    if (!res.ok) { status('Error: ' + (data.detail||res.statusText), 'err'); return; }
+    renderPreview(data);
+    status('Extracted ' + data.count + ' questions.', 'ok');
+  } catch (e) { status('Network error: ' + e.message, 'err'); }
+}
+
+function renderPreview(data) {
+  const stats = document.getElementById('stats');
+  stats.innerHTML = `<span class="pill">${data.count} cards</span><span class="pill">${data.chars} chars</span>`;
+  const el = document.getElementById('preview');
+  el.innerHTML = '';
+  (data.questions||[]).forEach((q,i) => {
+    const div = document.createElement('div');
+    div.className = 'qcard';
+    div.innerHTML = `<div class="front">${i+1}. ${escapeHtml(q.front)}</div>
+      <div class="back">${escapeHtml(q.back||'—')}</div>
+      <div class="tags">${(q.tags||[]).map(t=>`<span class="tag">${escapeHtml(t)}</span>`).join('')}</div>`;
+    el.appendChild(div);
+  });
+  if (!data.questions || !data.questions.length) el.innerHTML = '<p style="color:var(--muted)">No questions found.</p>';
+}
+function escapeHtml(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+async function generate() {
+  if (!selectedFile) { status('Please choose a PDF first.', 'warn'); return; }
+  status('<span class="spinner"></span>Generating deck…');
+  const btn = document.getElementById('genBtn');
+  btn.disabled = true;
+  try {
+    const res = await fetch('/api/generate', { method:'POST', body: buildForm() });
+    if (!res.ok) {
+      let msg = res.statusText;
+      try { const d = await res.json(); msg = d.detail || msg; } catch {}
+      status('Error: ' + msg, 'err'); return;
+    }
+    const blob = await res.blob();
+    const count = res.headers.get('X-Question-Count');
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = (document.getElementById('deckName').value||'pastpaper').replace(/\s+/g,'_') + '.apkg';
+    document.body.appendChild(a); a.click(); a.remove();
+    URL.revokeObjectURL(url);
+    status('Downloaded deck with ' + (count||'?') + ' cards. Import into Anki via File → Import.', 'ok');
+  } catch (e) { status('Network error: ' + e.message, 'err'); }
+  finally { btn.disabled = false; }
+}
+</script>
+</body>
+</html>
