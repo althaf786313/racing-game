@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="588" height="216" viewBox="0 0 588 216" fill="none" role="img" aria-label="Althaf // Developer Portfolio">
+  <defs>
+    <linearGradient id="bg_portfolio" x1="0" y1="0" x2="588" y2="216" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#090d17"/>
+      <stop offset="100%" stop-color="#0d1424"/>
+    </linearGradient>
+    <radialGradient id="glow_portfolio" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(520 36) scale(220 140)">
+      <stop offset="0%" stop-color="#00f59b" stop-opacity="0.16"/>
+      <stop offset="100%" stop-color="#00f59b" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+
+  <rect x="0.75" y="0.75" width="586.5" height="214.5" rx="15" fill="url(#bg_portfolio)" stroke="#1e2a45" stroke-width="1.5"/>
+  <rect x="1.5" y="1.5" width="585" height="213" rx="14" fill="url(#glow_portfolio)"/>
+  <line x1="28" y1="1.5" x2="188" y2="1.5" stroke="#00f59b" stroke-width="2.5"/>
+
+  <!-- Icon Box -->
+  <rect x="28" y="26" width="42" height="42" rx="10" fill="#08261d" stroke="#00f59b" stroke-opacity="0.5"/>
+  <g transform="translate(37, 35)">
+    <circle cx="12" cy="12" r="9" stroke="#00f59b" stroke-width="1.8"/><path d="M3.6 9h16.8M3.6 15h16.8M12 3a13.5 13.5 0 0 1 0 18M12 3a13.5 13.5 0 0 0 0 18" stroke="#00f59b" stroke-width="1.5"/>
+  </g>
+
+  <!-- Status Badge -->
+  <rect x="443" y="28" width="117" height="26" rx="13" fill="#08261d" stroke="#00f59b" stroke-opacity="0.55"/>
+  <text x="501.5" y="45" text-anchor="middle" fill="#00f59b" font-size="10.5" font-weight="700" letter-spacing="0.6" font-family="'JetBrains Mono', 'SFMono-Regular', Consolas, monospace">DEVELOPER HUB</text>
+
+  <!-- Title & Description -->
+  <text x="28" y="96" fill="#f8fafc" font-size="20" font-weight="800" font-family="'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif">Althaf // Developer Portfolio</text>
+  <text x="28" y="122" fill="#94a3b8" font-size="13" font-family="'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif">Interactive Dark Neon engineering showcase featuring embedded</text>
+  <text x="28" y="142" fill="#94a3b8" font-size="13" font-family="'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif">playable Road Rush arcade, system architecture &amp; profile studio.</text>
+
+  <!-- Tech Chips -->
+  <rect x="28" y="164" width="85" height="26" rx="6" fill="#10182b" stroke="#22304d"/><text x="70.5" y="181" text-anchor="middle" fill="#cbd5e1" font-size="11" font-weight="600" font-family="'JetBrains Mono', 'SFMono-Regular', Consolas, monospace">Portfolio</text><rect x="121" y="164" width="99" height="26" rx="6" fill="#10182b" stroke="#22304d"/><text x="170.5" y="181" text-anchor="middle" fill="#cbd5e1" font-size="11" font-weight="600" font-family="'JetBrains Mono', 'SFMono-Regular', Consolas, monospace">Interactive</text><rect x="228" y="164" width="68" height="26" rx="6" fill="#10182b" stroke="#22304d"/><text x="262.0" y="181" text-anchor="middle" fill="#cbd5e1" font-size="11" font-weight="600" font-family="'JetBrains Mono', 'SFMono-Regular', Consolas, monospace">Vercel</text><rect x="304" y="164" width="78" height="26" rx="6" fill="#10182b" stroke="#22304d"/><text x="343.0" y="181" text-anchor="middle" fill="#cbd5e1" font-size="11" font-weight="600" font-family="'JetBrains Mono', 'SFMono-Regular', Consolas, monospace">GH Pages</text>
+
+  <!-- Right Action Label -->
+  <text x="560" y="181" text-anchor="end" fill="#00f59b" font-size="11.5" font-weight="700" font-family="'JetBrains Mono', 'SFMono-Regular', Consolas, monospace">OPEN HUB -&gt;</text>
+</svg>

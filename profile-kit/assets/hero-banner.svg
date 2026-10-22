@@ -1,0 +1,113 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="330" viewBox="0 0 1200 330" fill="none" role="img" aria-label="Althaf - Software Engineer and Builder">
+  <defs>
+    <linearGradient id="bgGrad" x1="0" y1="0" x2="1200" y2="330" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#060911"/>
+      <stop offset="52%" stop-color="#0b1120"/>
+      <stop offset="100%" stop-color="#070a12"/>
+    </linearGradient>
+    <linearGradient id="frameGrad" x1="0" y1="0" x2="1200" y2="330" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#00f0ff" stop-opacity="0.65"/>
+      <stop offset="50%" stop-color="#dcff58" stop-opacity="0.35"/>
+      <stop offset="100%" stop-color="#ff2a85" stop-opacity="0.65"/>
+    </linearGradient>
+    <linearGradient id="scanBeam" x1="0" y1="0" x2="360" y2="0" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#00f0ff" stop-opacity="0"/>
+      <stop offset="50%" stop-color="#00f0ff" stop-opacity="0.95"/>
+      <stop offset="85%" stop-color="#dcff58" stop-opacity="0.9"/>
+      <stop offset="100%" stop-color="#ff2a85" stop-opacity="0"/>
+    </linearGradient>
+    <radialGradient id="cyanGlow" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(210 95) rotate(25) scale(360 210)">
+      <stop offset="0%" stop-color="#00f0ff" stop-opacity="0.14"/>
+      <stop offset="100%" stop-color="#00f0ff" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="limeGlow" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(960 250) rotate(-15) scale(340 190)">
+      <stop offset="0%" stop-color="#dcff58" stop-opacity="0.10"/>
+      <stop offset="100%" stop-color="#dcff58" stop-opacity="0"/>
+    </radialGradient>
+    <pattern id="cyberGrid" width="32" height="32" patternUnits="userSpaceOnUse">
+      <path d="M 32 0 L 0 0 0 32" fill="none" stroke="#1b2640" stroke-width="0.7" stroke-opacity="0.45"/>
+    </pattern>
+    <clipPath id="bannerClip">
+      <rect x="0" y="0" width="1200" height="330" rx="18"/>
+    </clipPath>
+  </defs>
+
+  <g clip-path="url(#bannerClip)">
+    <rect width="1200" height="330" fill="url(#bgGrad)"/>
+    <rect width="1200" height="330" fill="url(#cyberGrid)"/>
+    <rect width="1200" height="330" fill="url(#cyanGlow)"/>
+    <rect width="1200" height="330" fill="url(#limeGlow)"/>
+
+    <!-- Top Chrome Bar -->
+    <rect x="0" y="0" width="1200" height="56" fill="#080c17" fill-opacity="0.90"/>
+    <line x1="0" y1="56" x2="1200" y2="56" stroke="#1b263f" stroke-width="1"/>
+
+    <!-- Animated Top Laser Beam -->
+    <rect x="-360" y="0" width="360" height="3" fill="url(#scanBeam)">
+      <animateTransform attributeName="transform" type="translate" from="0 0" to="1560 0" dur="5.5s" repeatCount="indefinite"/>
+    </rect>
+
+    <!-- Terminal Window Controls -->
+    <circle cx="34" cy="28" r="5.5" fill="#ff2a85"/>
+    <circle cx="54" cy="28" r="5.5" fill="#ffb800"/>
+    <circle cx="74" cy="28" r="5.5" fill="#00f59b"/>
+    <text x="98" y="32" fill="#8b95a8" font-size="12.5" font-family="'JetBrains Mono', 'SFMono-Regular', Consolas, monospace">~/github/althaf786313 — developer-dashboard.zsh</text>
+
+    <!-- Status Pill -->
+    <rect x="910" y="14" width="256" height="28" rx="14" fill="#071f1b" stroke="#00f59b" stroke-opacity="0.45"/>
+    <circle cx="929" cy="28" r="4.5" fill="#00f59b">
+      <animate attributeName="opacity" values="1;0.25;1" dur="2s" repeatCount="indefinite"/>
+    </circle>
+    <text x="943" y="32" fill="#00f59b" font-size="11" font-weight="700" letter-spacing="0.8" font-family="'JetBrains Mono', 'SFMono-Regular', Consolas, monospace">OPEN TO COLLABORATE &amp; BUILD</text>
+
+    <!-- Left Column: Identity & Engineering Headline -->
+    <text x="48" y="94" fill="#00f0ff" font-size="13" font-weight="700" letter-spacing="1.2" font-family="'JetBrains Mono', 'SFMono-Regular', Consolas, monospace">&gt; $ whoami --profile</text>
+
+    <text x="48" y="152" fill="#f8fafc" font-size="56" font-weight="800" letter-spacing="1.5" font-family="'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif">ALTHAF <tspan fill="#dcff58" font-weight="800">//</tspan></text>
+
+    <text x="48" y="188" fill="#00f0ff" font-size="22" font-weight="700" font-family="'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif">Software Engineer &amp; Builder</text>
+
+    <text x="48" y="222" fill="#cbd5e1" font-size="14.5" font-family="'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif">Turning solid software fundamentals into interactive web platforms,</text>
+    <text x="48" y="245" fill="#cbd5e1" font-size="14.5" font-family="'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif">Python media automation engines, and zero-dependency browser games.</text>
+
+    <!-- Left Bottom Capability Chips -->
+    <g transform="translate(48, 268)">
+      <rect x="0" y="0" width="164" height="32" rx="8" fill="#0e1629" stroke="#00f0ff" stroke-opacity="0.4"/>
+      <circle cx="17" cy="16" r="4" fill="#00f0ff"/>
+      <text x="29" y="20" fill="#e2e8f0" font-size="12" font-weight="600" font-family="'JetBrains Mono', 'SFMono-Regular', Consolas, monospace">Python &amp; Web</text>
+
+      <rect x="176" y="0" width="184" height="32" rx="8" fill="#0e1629" stroke="#dcff58" stroke-opacity="0.4"/>
+      <circle cx="193" cy="16" r="4" fill="#dcff58"/>
+      <text x="205" y="20" fill="#e2e8f0" font-size="12" font-weight="600" font-family="'JetBrains Mono', 'SFMono-Regular', Consolas, monospace">Media Pipelines</text>
+
+      <rect x="372" y="0" width="184" height="32" rx="8" fill="#0e1629" stroke="#ff2a85" stroke-opacity="0.4"/>
+      <circle cx="389" cy="16" r="4" fill="#ff2a85"/>
+      <text x="401" y="20" fill="#e2e8f0" font-size="12" font-weight="600" font-family="'JetBrains Mono', 'SFMono-Regular', Consolas, monospace">Canvas Engines</text>
+    </g>
+
+    <!-- Right Column: HUD Engineering Architecture Panel -->
+    <rect x="708" y="76" width="458" height="226" rx="14" fill="#0c1222" fill-opacity="0.94" stroke="#22304f" stroke-width="1.2"/>
+    <text x="732" y="104" fill="#dcff58" font-size="11.5" font-weight="700" letter-spacing="1.2" font-family="'JetBrains Mono', 'SFMono-Regular', Consolas, monospace">ARCHITECTURE // ACTIVE DOMAINS</text>
+    <line x1="732" y1="116" x2="1142" y2="116" stroke="#1b2640" stroke-width="1"/>
+
+    <!-- Row 1 -->
+    <rect x="732" y="130" width="36" height="32" rx="8" fill="#09222d" stroke="#00f0ff" stroke-opacity="0.45"/>
+    <text x="750" y="150" text-anchor="middle" fill="#00f0ff" font-size="12" font-weight="700" font-family="'JetBrains Mono', 'SFMono-Regular', Consolas, monospace">01</text>
+    <text x="782" y="145" fill="#f8fafc" font-size="14" font-weight="700" font-family="'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif">Interactive Browser Platforms</text>
+    <text x="782" y="163" fill="#8b95a8" font-size="11.5" font-family="'JetBrains Mono', 'SFMono-Regular', Consolas, monospace">Pyodide WASM • HTML5 Canvas • Web Audio</text>
+
+    <!-- Row 2 -->
+    <rect x="732" y="182" width="36" height="32" rx="8" fill="#1e2510" stroke="#dcff58" stroke-opacity="0.45"/>
+    <text x="750" y="202" text-anchor="middle" fill="#dcff58" font-size="12" font-weight="700" font-family="'JetBrains Mono', 'SFMono-Regular', Consolas, monospace">02</text>
+    <text x="782" y="197" fill="#f8fafc" font-size="14" font-weight="700" font-family="'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif">Python &amp; Automated Video Tooling</text>
+    <text x="782" y="215" fill="#8b95a8" font-size="11.5" font-family="'JetBrains Mono', 'SFMono-Regular', Consolas, monospace">Flask REST • Manim • Piper TTS • FFmpeg</text>
+
+    <!-- Row 3 -->
+    <rect x="732" y="234" width="36" height="32" rx="8" fill="#290d1f" stroke="#ff2a85" stroke-opacity="0.45"/>
+    <text x="750" y="254" text-anchor="middle" fill="#ff2a85" font-size="12" font-weight="700" font-family="'JetBrains Mono', 'SFMono-Regular', Consolas, monospace">03</text>
+    <text x="782" y="249" fill="#f8fafc" font-size="14" font-weight="700" font-family="'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif">Continuous Learning &amp; Shipping</text>
+    <text x="782" y="267" fill="#8b95a8" font-size="11.5" font-family="'JetBrains Mono', 'SFMono-Regular', Consolas, monospace">Clean Code • Self-Contained Builds • OSS</text>
+  </g>
+
+  <rect x="0.75" y="0.75" width="1198.5" height="328.5" rx="17.25" stroke="url(#frameGrad)" stroke-width="1.5"/>
+</svg>
