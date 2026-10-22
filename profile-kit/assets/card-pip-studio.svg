@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="588" height="216" viewBox="0 0 588 216" fill="none" role="img" aria-label="Pip Studio">
+  <defs>
+    <linearGradient id="bg_pipstudio" x1="0" y1="0" x2="588" y2="216" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#090d17"/>
+      <stop offset="100%" stop-color="#0d1424"/>
+    </linearGradient>
+    <radialGradient id="glow_pipstudio" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(520 36) scale(220 140)">
+      <stop offset="0%" stop-color="#dcff58" stop-opacity="0.16"/>
+      <stop offset="100%" stop-color="#dcff58" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+
+  <rect x="0.75" y="0.75" width="586.5" height="214.5" rx="15" fill="url(#bg_pipstudio)" stroke="#1e2a45" stroke-width="1.5"/>
+  <rect x="1.5" y="1.5" width="585" height="213" rx="14" fill="url(#glow_pipstudio)"/>
+  <line x1="28" y1="1.5" x2="188" y2="1.5" stroke="#dcff58" stroke-width="2.5"/>
+
+  <!-- Icon Box -->
+  <rect x="28" y="26" width="42" height="42" rx="10" fill="#1e2610" stroke="#dcff58" stroke-opacity="0.5"/>
+  <g transform="translate(37, 35)">
+    <rect x="2" y="4" width="20" height="16" rx="3" stroke="#dcff58" stroke-width="1.8"/><polygon points="10,8.5 16,12 10,15.5" fill="#dcff58"/>
+  </g>
+
+  <!-- Status Badge -->
+  <rect x="415" y="28" width="145" height="26" rx="13" fill="#1e2610" stroke="#dcff58" stroke-opacity="0.55"/>
+  <text x="487.5" y="45" text-anchor="middle" fill="#dcff58" font-size="10.5" font-weight="700" letter-spacing="0.6" font-family="'JetBrains Mono', 'SFMono-Regular', Consolas, monospace">PYTHON FULL-STACK</text>
+
+  <!-- Title & Description -->
+  <text x="28" y="96" fill="#f8fafc" font-size="20" font-weight="800" font-family="'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif">Pip Studio</text>
+  <text x="28" y="122" fill="#94a3b8" font-size="13" font-family="'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif">All-in-one animated video studio uniting Manim Pro, custom Pillow</text>
+  <text x="28" y="142" fill="#94a3b8" font-size="13" font-family="'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif">cartoon scenes, offline Piper TTS voiceover &amp; FFmpeg MP4 muxing.</text>
+
+  <!-- Tech Chips -->
+  <rect x="28" y="164" width="68" height="26" rx="6" fill="#10182b" stroke="#22304d"/><text x="62.0" y="181" text-anchor="middle" fill="#cbd5e1" font-size="11" font-weight="600" font-family="'JetBrains Mono', 'SFMono-Regular', Consolas, monospace">Python</text><rect x="104" y="164" width="68" height="26" rx="6" fill="#10182b" stroke="#22304d"/><text x="138.0" y="181" text-anchor="middle" fill="#cbd5e1" font-size="11" font-weight="600" font-family="'JetBrains Mono', 'SFMono-Regular', Consolas, monospace">Flask</text><rect x="180" y="164" width="68" height="26" rx="6" fill="#10182b" stroke="#22304d"/><text x="214.0" y="181" text-anchor="middle" fill="#cbd5e1" font-size="11" font-weight="600" font-family="'JetBrains Mono', 'SFMono-Regular', Consolas, monospace">Manim</text><rect x="256" y="164" width="68" height="26" rx="6" fill="#10182b" stroke="#22304d"/><text x="290.0" y="181" text-anchor="middle" fill="#cbd5e1" font-size="11" font-weight="600" font-family="'JetBrains Mono', 'SFMono-Regular', Consolas, monospace">FFmpeg</text>
+
+  <!-- Right Action Label -->
+  <text x="560" y="181" text-anchor="end" fill="#dcff58" font-size="11.5" font-weight="700" font-family="'JetBrains Mono', 'SFMono-Regular', Consolas, monospace">VIEW STUDIO -&gt;</text>
+</svg>

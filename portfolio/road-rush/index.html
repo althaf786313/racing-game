@@ -1,0 +1,1999 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#101217">
+<title>ROAD RUSH — Sunset & Beyond</title>
+<style>
+:root {
+  --bg: #101217;
+  --panel: #191c22;
+  --panel-light: #232730;
+  --ink: #f3f2ec;
+  --muted: #93969d;
+  --acid: #dcff58;
+  --orange: #ff8054;
+  --cyan: #00f0ff;
+  --pink: #ff2a85;
+  --line: rgba(255, 255, 255, 0.13);
+}
+
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+
+html, body {
+  margin: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+  user-select: none;
+}
+
+button {
+  font: inherit;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  border: none;
+  background: none;
+}
+
+button:focus-visible {
+  outline: 2px solid var(--acid);
+  outline-offset: 3px;
+}
+
+button, canvas { touch-action: none; }
+
+.app {
+  height: 100%;
+  height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  max-width: 1920px;
+  margin: auto;
+  position: relative;
+}
+
+/* TOPBAR */
+.topbar {
+  height: 64px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 24px;
+  border-bottom: 1px solid var(--line);
+  background: #101217;
+  position: relative;
+  z-index: 20;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.brand-mark {
+  width: 36px;
+  height: 36px;
+  background: var(--acid);
+  color: #101217;
+  display: grid;
+  place-items: center;
+  transform: skew(-8deg);
+  border-radius: 4px;
+  box-shadow: 0 0 15px rgba(220, 255, 88, 0.3);
+}
+
+.brand-mark svg {
+  width: 22px;
+  height: 22px;
+  transform: skew(8deg);
+}
+
+.brand-name {
+  font-size: 22px;
+  font-weight: 900;
+  font-style: italic;
+  letter-spacing: -1px;
+}
+
+.brand-name span { color: var(--acid); }
+
+.top-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.record {
+  font: 10px monospace;
+  letter-spacing: 1.5px;
+  color: var(--muted);
+  text-align: right;
+  line-height: 1.5;
+}
+
+.record strong {
+  display: block;
+  color: var(--ink);
+  font-size: 13px;
+  letter-spacing: 1px;
+}
+
+.icon-btn {
+  height: 36px;
+  width: 36px;
+  background: transparent;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  color: #c4c6cb;
+  display: grid;
+  place-items: center;
+  transition: all 0.2s;
+}
+
+.icon-btn:hover {
+  background: #292d32;
+  color: var(--acid);
+  border-color: rgba(220, 255, 88, 0.4);
+}
+
+.icon-btn svg {
+  width: 18px;
+  height: 18px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+#soundBtn.muted { color: #555; }
+
+/* STAGE & CANVAS */
+.stage {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+  background: #000;
+  isolation: isolate;
+}
+
+#game {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.shade {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  box-shadow: inset 0 0 120px rgba(0,0,0,0.7);
+  z-index: 1;
+}
+
+/* HUD OVERLAY */
+.hud {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 3;
+}
+
+.hud-top {
+  position: absolute;
+  left: 24px;
+  right: 24px;
+  top: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.position-block {
+  display: flex;
+  align-items: flex-end;
+  gap: 12px;
+}
+
+.eyebrow {
+  font: 10px monospace;
+  letter-spacing: 2px;
+  color: #b5b6bd;
+  text-transform: uppercase;
+}
+
+.place {
+  font-size: 52px;
+  font-style: italic;
+  font-weight: 900;
+  line-height: 0.9;
+  letter-spacing: -3px;
+  text-shadow: 0 3px 20px rgba(0,0,0,0.5);
+  color: #fff;
+}
+
+.place small {
+  font-size: 20px;
+  color: #acadb5;
+  letter-spacing: -1px;
+  margin-left: 4px;
+}
+
+.pos-meta strong {
+  display: block;
+  font: 13px monospace;
+  margin-top: 4px;
+  color: var(--acid);
+  letter-spacing: 1px;
+}
+
+.race-progress {
+  position: absolute;
+  top: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 32%;
+  max-width: 360px;
+}
+
+.progress-labels {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font: 10px monospace;
+  letter-spacing: 1.5px;
+  color: #dbdce1;
+  margin-bottom: 8px;
+}
+
+.progress-labels span:last-child { color: var(--acid); }
+
+.track-line {
+  height: 4px;
+  background: rgba(255,255,255,0.15);
+  position: relative;
+  border-radius: 2px;
+}
+
+.track-fill {
+  height: 100%;
+  width: 0%;
+  background: var(--acid);
+  position: relative;
+  box-shadow: 0 0 10px rgba(220, 255, 88, 0.6);
+  border-radius: 2px;
+  transition: width 0.1s linear;
+}
+
+.track-fill:after {
+  content: "";
+  position: absolute;
+  right: -4px;
+  top: -3px;
+  width: 10px;
+  height: 10px;
+  background: #fff;
+  border: 2px solid var(--acid);
+  transform: rotate(45deg);
+}
+
+.timer { text-align: right; }
+
+.timer strong {
+  display: block;
+  font: bold 32px monospace;
+  letter-spacing: -1px;
+  margin: 2px 0;
+  color: #fff;
+  text-shadow: 0 0 10px rgba(0,0,0,0.8);
+}
+
+.timer.danger strong { color: var(--orange); }
+
+.speedometer {
+  position: absolute;
+  bottom: 24px;
+  left: 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.speed-reading {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.speed-number {
+  font-size: 72px;
+  line-height: 0.9;
+  font-style: italic;
+  font-weight: 900;
+  letter-spacing: -4px;
+  font-variant-numeric: tabular-nums;
+  color: #fff;
+  text-shadow: 0 4px 20px rgba(0,0,0,0.6);
+}
+
+.speed-unit {
+  font: 11px monospace;
+  letter-spacing: 1.5px;
+  color: #c9c9ce;
+}
+
+.gear-line {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  margin-top: 8px;
+}
+
+.gear {
+  font: bold 11px monospace;
+  background: var(--acid);
+  color: #101217;
+  padding: 3px 8px;
+  border-radius: 3px;
+  font-weight: 900;
+}
+
+.rev-bars {
+  display: flex;
+  gap: 3px;
+  transform: skew(-15deg);
+}
+
+.rev-bars i {
+  height: 10px;
+  width: 7px;
+  background: rgba(255,255,255,0.15);
+  border-radius: 1px;
+  transition: background 0.05s;
+}
+
+.rev-bars i.on { background: var(--acid); }
+.rev-bars i.on.red { background: var(--orange); }
+
+.vitals {
+  position: absolute;
+  right: 24px;
+  bottom: 24px;
+  width: 200px;
+}
+
+.meter + .meter { margin-top: 14px; }
+
+.meter-label {
+  display: flex;
+  justify-content: space-between;
+  font: 10px monospace;
+  letter-spacing: 1.5px;
+  margin-bottom: 6px;
+  color: #b5b6bd;
+}
+
+.meter-label span:last-child { color: #fff; }
+
+.meter-track {
+  height: 6px;
+  background: rgba(255, 255, 255, 0.15);
+  transform: skew(-12deg);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.meter-fill {
+  height: 100%;
+  width: 100%;
+  background: var(--acid);
+  transition: width 0.1s linear, background-color 0.2s;
+  box-shadow: 0 0 8px currentColor;
+}
+
+.meter.health .meter-fill { background: #00f0ff; }
+.meter.health.low .meter-fill { background: var(--orange); }
+.meter.nitro .meter-fill { background: var(--acid); }
+
+.track-caption {
+  position: absolute;
+  bottom: 28px;
+  left: 50%;
+  transform: translateX(-50%);
+  font: 10px monospace;
+  letter-spacing: 2px;
+  color: #d1d2d8;
+  text-align: center;
+  text-transform: uppercase;
+  background: rgba(16, 18, 23, 0.6);
+  padding: 6px 16px;
+  border-radius: 20px;
+  border: 1px solid rgba(255,255,255,0.1);
+  backdrop-filter: blur(8px);
+}
+
+/* MENU OVERLAY & MAP SELECTOR */
+.menu-screen {
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  background: rgba(12, 14, 20, 0.92);
+  backdrop-filter: blur(12px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 30px;
+  overflow-y: auto;
+}
+
+.menu-container {
+  max-width: 1100px;
+  width: 100%;
+  margin: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.menu-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  border-bottom: 1px solid var(--line);
+  padding-bottom: 16px;
+}
+
+.menu-title-area h1 {
+  font-size: clamp(36px, 5vw, 64px);
+  font-weight: 900;
+  font-style: italic;
+  line-height: 0.95;
+  letter-spacing: -2px;
+  margin: 0;
+}
+
+.menu-title-area h1 span { color: var(--acid); }
+
+.menu-subtitle {
+  font: 12px monospace;
+  letter-spacing: 2px;
+  color: var(--muted);
+  margin-top: 6px;
+  text-transform: uppercase;
+}
+
+/* MAP SELECTOR CARDS GRID */
+.map-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+}
+
+.map-card {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 16px;
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 220px;
+}
+
+.map-card:hover {
+  transform: translateY(-4px);
+  border-color: rgba(220, 255, 88, 0.5);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.5);
+}
+
+.map-card.selected {
+  border-color: var(--acid);
+  background: linear-gradient(180deg, var(--panel-light) 0%, var(--panel) 100%);
+  box-shadow: 0 0 25px rgba(220, 255, 88, 0.2);
+}
+
+.map-card-badge {
+  font: 9px monospace;
+  letter-spacing: 1.5px;
+  padding: 3px 8px;
+  border-radius: 3px;
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--ink);
+  align-self: flex-start;
+  text-transform: uppercase;
+}
+
+.map-card.selected .map-card-badge {
+  background: var(--acid);
+  color: #101217;
+  font-weight: bold;
+}
+
+.map-card-title {
+  font-size: 20px;
+  font-weight: 900;
+  font-style: italic;
+  letter-spacing: -0.5px;
+  margin: 12px 0 4px;
+}
+
+.map-card-desc {
+  font-size: 11px;
+  color: var(--muted);
+  line-height: 1.4;
+  margin-bottom: 14px;
+}
+
+.map-card-stats {
+  display: flex;
+  justify-content: space-between;
+  border-top: 1px solid rgba(255,255,255,0.08);
+  padding-top: 10px;
+  font: 9px monospace;
+  color: #a0a3ab;
+}
+
+.map-card-stats strong {
+  display: block;
+  color: var(--ink);
+  font-size: 12px;
+  margin-top: 2px;
+}
+
+.map-card-bg {
+  position: absolute;
+  right: -20px;
+  bottom: -20px;
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  opacity: 0.12;
+  pointer-events: none;
+}
+
+/* MENU FOOTER CONTROLS */
+.menu-footer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  background: var(--panel);
+  padding: 20px;
+  border-radius: 8px;
+  border: 1px solid var(--line);
+}
+
+.diff-selector {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.diff-selector label {
+  font: 10px monospace;
+  letter-spacing: 1.5px;
+  color: var(--muted);
+  margin-right: 6px;
+}
+
+.diff-btn {
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  padding: 8px 14px;
+  font: bold 10px monospace;
+  letter-spacing: 1px;
+  color: var(--muted);
+  background: rgba(255,255,255,0.03);
+  transition: all 0.15s;
+}
+
+.diff-btn.selected {
+  border-color: var(--acid);
+  color: var(--acid);
+  background: rgba(220, 255, 88, 0.1);
+}
+
+.start-btn {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  background: var(--acid);
+  color: #101217;
+  padding: 16px 36px;
+  border-radius: 6px;
+  font-size: 16px;
+  font-weight: 900;
+  font-style: italic;
+  letter-spacing: 1px;
+  box-shadow: 0 4px 25px rgba(220, 255, 88, 0.25);
+  transition: all 0.2s;
+}
+
+.start-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 35px rgba(220, 255, 88, 0.45);
+  background: #e6ff70;
+}
+
+.start-btn svg {
+  width: 20px;
+  height: 20px;
+  fill: currentColor;
+}
+
+.controls-legend {
+  display: flex;
+  gap: 16px;
+  color: var(--muted);
+  font: 10px monospace;
+}
+
+kbd {
+  font: 10px monospace;
+  padding: 2px 6px;
+  color: #fff;
+  border: 1px solid rgba(255,255,255,0.2);
+  border-bottom: 2px solid rgba(255,255,255,0.3);
+  border-radius: 3px;
+  background: rgba(255,255,255,0.08);
+}
+
+/* COUNTDOWN SCREEN */
+.countdown {
+  position: absolute;
+  left: 50%;
+  top: 40%;
+  transform: translate(-50%, -50%);
+  z-index: 5;
+  text-align: center;
+  pointer-events: none;
+}
+
+.countdown strong {
+  display: block;
+  font-size: 120px;
+  line-height: 1;
+  font-weight: 900;
+  font-style: italic;
+  color: var(--acid);
+  text-shadow: 0 0 40px rgba(220, 255, 88, 0.6), 0 5px 20px #000;
+  animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.countdown span {
+  font: 14px monospace;
+  letter-spacing: 3px;
+  color: #fff;
+  text-transform: uppercase;
+  background: rgba(0,0,0,0.6);
+  padding: 4px 12px;
+  border-radius: 4px;
+}
+
+/* GAME OVER / RESULTS MODAL */
+.results-screen {
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  background: rgba(12, 14, 20, 0.92);
+  backdrop-filter: blur(12px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+
+.results-box {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 36px;
+  width: 100%;
+  max-width: 480px;
+  text-align: center;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
+}
+
+.results-rank {
+  font-size: 72px;
+  font-weight: 900;
+  font-style: italic;
+  color: var(--acid);
+  line-height: 1;
+  margin-bottom: 4px;
+  text-shadow: 0 0 20px rgba(220, 255, 88, 0.3);
+}
+
+.results-title {
+  font-size: 24px;
+  font-weight: 900;
+  letter-spacing: -0.5px;
+  margin-bottom: 20px;
+}
+
+.results-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  background: rgba(0, 0, 0, 0.25);
+  padding: 16px;
+  border-radius: 8px;
+  margin-bottom: 24px;
+  text-align: left;
+  font: 11px monospace;
+  color: var(--muted);
+}
+
+.results-grid strong {
+  display: block;
+  font-size: 16px;
+  color: #fff;
+  margin-top: 2px;
+}
+
+.results-actions {
+  display: flex;
+  gap: 12px;
+}
+
+.btn-secondary {
+  flex: 1;
+  border: 1px solid var(--line);
+  padding: 14px;
+  border-radius: 6px;
+  font-weight: 700;
+  color: #fff;
+  background: rgba(255,255,255,0.05);
+  transition: background 0.2s;
+}
+
+.btn-secondary:hover { background: rgba(255,255,255,0.12); }
+
+/* MOBILE CONTROLS OVERLAY */
+.mobile-controls {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 4;
+  display: none;
+}
+
+@media (max-width: 1024px), (pointer: coarse) {
+  .mobile-controls { display: block; }
+  .controls-legend { display: none; }
+}
+
+.touch-btn {
+  position: absolute;
+  pointer-events: auto;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  color: #fff;
+  backdrop-filter: blur(4px);
+  active-bg: rgba(220, 255, 88, 0.3);
+}
+
+.touch-btn:active {
+  background: rgba(220, 255, 88, 0.3);
+  border-color: var(--acid);
+  color: var(--acid);
+}
+
+#btnLeft { left: 20px; bottom: 30px; width: 64px; height: 64px; }
+#btnRight { left: 96px; bottom: 30px; width: 64px; height: 64px; }
+#btnGas { right: 20px; bottom: 30px; width: 76px; height: 76px; background: rgba(220, 255, 88, 0.15); border-color: var(--acid); }
+#btnBrake { right: 108px; bottom: 30px; width: 58px; height: 58px; }
+#btnNitro { right: 20px; bottom: 120px; width: 58px; height: 58px; background: rgba(0, 240, 255, 0.15); border-color: var(--cyan); }
+
+@keyframes popIn {
+  0% { transform: scale(0.5); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
+}
+</style>
+</head>
+<body>
+<div class="app">
+  <!-- TOPBAR -->
+  <header class="topbar">
+    <div class="brand">
+      <div class="brand-mark">
+        <svg viewBox="0 0 24 24"><path fill="currentColor" d="M19.44 9.03L15.4 5.01L13.98 6.43L16.57 9.02H9.01C6.8 9.02 5 10.82 5 13.03V18.02H7V13.03C7 11.92 7.9 11.02 9.01 11.02H16.58L13.99 13.61L15.41 15.03L19.45 11L19.44 9.03Z"/></svg>
+      </div>
+      <div class="brand-name">ROAD<span>RUSH</span></div>
+    </div>
+    <div class="top-actions">
+      <div class="record">BEST SCORE<strong id="topScore">0 PTS</strong></div>
+      <button class="icon-btn" id="soundBtn" title="Toggle Sound">
+        <svg viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path class="sound-wave" d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path class="sound-wave" d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <!-- STAGE / CANVAS -->
+  <main class="stage">
+    <canvas id="game"></canvas>
+    <div class="shade"></div>
+
+    <!-- HUD OVERLAY -->
+    <div class="hud" id="hud" hidden>
+      <div class="hud-top">
+        <div class="position-block">
+          <div>
+            <div class="eyebrow">RANK</div>
+            <div class="place" id="hudRank">1<small>/8</small></div>
+          </div>
+          <div class="pos-meta">
+            <strong id="hudLap">LAP 1/2</strong>
+          </div>
+        </div>
+
+        <div class="race-progress">
+          <div class="progress-labels">
+            <span>START</span>
+            <span id="mapProgressTitle">SUNSET HIGHWAY</span>
+            <span>FINISH</span>
+          </div>
+          <div class="track-line">
+            <div class="track-fill" id="progressBar"></div>
+          </div>
+        </div>
+
+        <div class="timer" id="timerBox">
+          <div class="eyebrow">TIME</div>
+          <strong id="hudTime">00:00.00</strong>
+          <div class="score" id="hudScore">PTS 0</div>
+        </div>
+      </div>
+
+      <div class="speedometer">
+        <div class="speed-reading">
+          <span class="speed-number" id="hudSpeed">0</span>
+          <span class="speed-unit">KM/H</span>
+        </div>
+        <div class="gear-line">
+          <span class="gear" id="hudGear">1ST</span>
+          <div class="rev-bars" id="revBars">
+            <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+          </div>
+        </div>
+      </div>
+
+      <div class="vitals">
+        <div class="meter health" id="healthMeter">
+          <div class="meter-label"><span>BIKE CONDITION</span><span id="healthVal">100%</span></div>
+          <div class="meter-track"><div class="meter-fill" id="healthFill"></div></div>
+        </div>
+        <div class="meter nitro">
+          <div class="meter-label"><span>NITRO BOOST</span><span id="nitroVal">100%</span></div>
+          <div class="meter-track"><div class="meter-fill" id="nitroFill"></div></div>
+        </div>
+      </div>
+
+      <div class="track-caption" id="hudTrackName">SUNSET HIGHWAY — COASTAL DRIVE</div>
+    </div>
+
+    <!-- COUNTDOWN -->
+    <div class="countdown" id="countdownBox" hidden>
+      <strong id="countNum">3</strong>
+      <span id="countSub">READY</span>
+    </div>
+
+    <!-- MOBILE CONTROLS -->
+    <div class="mobile-controls" id="mobileControls">
+      <button class="touch-btn" id="btnLeft">◄</button>
+      <button class="touch-btn" id="btnRight">►</button>
+      <button class="touch-btn" id="btnGas">GAS</button>
+      <button class="touch-btn" id="btnBrake">BRK</button>
+      <button class="touch-btn" id="btnNitro">N₂O</button>
+    </div>
+
+    <!-- MAIN MENU & MAP SELECTOR -->
+    <div class="menu-screen" id="menuScreen">
+      <div class="menu-container">
+        <div class="menu-header">
+          <div class="menu-title-area">
+            <h1>SELECT <span>MAP MODE</span></h1>
+            <div class="menu-subtitle">Choose your highway, master the elements & outrace rival bikers</div>
+          </div>
+        </div>
+
+        <!-- MAP MODES GRID -->
+        <div class="map-grid" id="mapGrid">
+          <!-- Dynamically filled by JS -->
+        </div>
+
+        <div class="menu-footer">
+          <div class="diff-selector">
+            <label>DIFFICULTY:</label>
+            <button class="diff-btn" data-diff="easy">ROOKIE</button>
+            <button class="diff-btn selected" data-diff="medium">PRO</button>
+            <button class="diff-btn" data-diff="hard">LEGEND</button>
+          </div>
+
+          <div class="controls-legend">
+            <span><kbd>▲</kbd> <kbd>W</kbd> Accelerate</span>
+            <span><kbd>◄</kbd> <kbd>►</kbd> Steer</span>
+            <span><kbd>▼</kbd> <kbd>S</kbd> Brake</span>
+            <span><kbd>SPACE</kbd> Nitro</span>
+          </div>
+
+          <button class="start-btn" id="startBtn">
+            RACE NOW
+            <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- RACE RESULTS MODAL -->
+    <div class="results-screen" id="resultsScreen" hidden>
+      <div class="results-box">
+        <div class="results-rank" id="resRank">1st</div>
+        <div class="results-title" id="resTitle">VICTORY!</div>
+        <div class="results-grid">
+          <div>TRACK<strong id="resTrack">Sunset Highway</strong></div>
+          <div>TIME<strong id="resTime">01:42.50</strong></div>
+          <div>TOP SPEED<strong id="resSpeed">285 KM/H</strong></div>
+          <div>TOTAL SCORE<strong id="resScore">14,200</strong></div>
+        </div>
+        <div class="results-actions">
+          <button class="btn-secondary" id="menuReturnBtn">MAP SELECT</button>
+          <button class="start-btn" id="retryBtn" style="flex:1; justify-content:center; padding:14px;">RETRY</button>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script>
+/* ==========================================================================
+   ROAD RUSH — MULTI-MAP BIKE RACING ENGINE
+   ========================================================================== */
+
+// --- MAP MODES DEFINITIONS ---
+const MAP_MODES = [
+  {
+    id: 'sunset',
+    name: 'Sunset Highway',
+    tagline: 'Coastal Palms & Warm Horizons',
+    badge: 'CLASSIC',
+    difficulty: 'Easy',
+    skyGradient: ['#1d0d29', '#5e1b43', '#b84256', '#e08351'],
+    horizonColor: '#e08351',
+    sunColor: '#ffd000',
+    groundColor: '#1d2218',
+    asphaltColor: '#36383e',
+    rumble1: '#e04343', rumble2: '#ffffff',
+    laneColor: '#ffffff',
+    fogColor: '#b84256',
+    weather: 'clear',
+    grip: 1.0,
+    trafficDensity: 0.8,
+    sceneryType: 'palm',
+    description: 'A smooth coastal highway with gentle hills, golden hour sunlight, and wide sweeping bends.',
+    bgCircle: '#ff8054'
+  },
+  {
+    id: 'cyber',
+    name: 'Neon Cyber City',
+    tagline: 'Rain-soaked Grid & Holograms',
+    badge: 'HIGH SPEED',
+    difficulty: 'Medium',
+    skyGradient: ['#04020a', '#0d0722', '#1b0c3f', '#2a0845'],
+    horizonColor: '#ff0055',
+    sunColor: null,
+    groundColor: '#070913',
+    asphaltColor: '#16192b',
+    rumble1: '#00f0ff', rumble2: '#ff0080',
+    laneColor: '#00f0ff',
+    fogColor: '#1b0c3f',
+    weather: 'rain',
+    grip: 0.9,
+    trafficDensity: 1.2,
+    sceneryType: 'cyber',
+    description: 'Slick neon streets surrounded by skyscrapers, rain spray, speed boost zones and intense light grids.',
+    bgCircle: '#00f0ff'
+  },
+  {
+    id: 'desert',
+    name: 'Desert Dust Storm',
+    tagline: 'Red Canyons & Scorching Heat',
+    badge: 'HAZARD',
+    difficulty: 'Hard',
+    skyGradient: ['#2b0d02', '#612108', '#a84c18', '#e28835'],
+    horizonColor: '#f7b05b',
+    sunColor: '#fff3d1',
+    groundColor: '#3a1f10',
+    asphaltColor: '#453c35',
+    rumble1: '#d66324', rumble2: '#e3b154',
+    laneColor: '#e3b154',
+    fogColor: '#a84c18',
+    weather: 'dust',
+    grip: 0.82,
+    trafficDensity: 1.0,
+    sceneryType: 'canyon',
+    description: 'Challenging canyon roads through swirling red sandstorms with low visibility and tight turns.',
+    bgCircle: '#ff5500'
+  },
+  {
+    id: 'alpine',
+    name: 'Alpine Snow Pass',
+    tagline: 'Icy Peaks & Treacherous Slips',
+    badge: 'SLIPPERY',
+    difficulty: 'Extreme',
+    skyGradient: ['#0b1626', '#1a2e47', '#2e4e73', '#517aa6'],
+    horizonColor: '#93b6d9',
+    sunColor: '#ffffff',
+    groundColor: '#cfdbe6',
+    asphaltColor: '#2b343d',
+    rumble1: '#2b7fff', rumble2: '#ffffff',
+    laneColor: '#aee5ff',
+    fogColor: '#517aa6',
+    weather: 'snow',
+    grip: 0.68,
+    trafficDensity: 0.7,
+    sceneryType: 'pine',
+    description: 'High altitude mountain roads covered in ice patches. Extreme drift physics and steep cliff drops.',
+    bgCircle: '#2b7fff'
+  },
+  {
+    id: 'midnight',
+    name: 'Midnight Thunder',
+    tagline: 'Dark Forests & Lightning Strikes',
+    badge: 'NIGHT DRIVE',
+    difficulty: 'Hard',
+    skyGradient: ['#020305', '#080a12', '#0f1322', '#141a2e'],
+    horizonColor: '#1d2744',
+    sunColor: null,
+    groundColor: '#0a0d12',
+    asphaltColor: '#1f242e',
+    rumble1: '#ff0044', rumble2: '#222233',
+    laneColor: '#ffd700',
+    fogColor: '#0f1322',
+    weather: 'thunder',
+    grip: 0.85,
+    trafficDensity: 1.1,
+    sceneryType: 'deadTree',
+    description: 'Drive in pitch darkness broken only by your headlights and sudden blinding flashes of lightning.',
+    bgCircle: '#a020f0'
+  }
+];
+
+// --- AUDIO SYNTHESIZER (WEB AUDIO API) ---
+class AudioEngine {
+  constructor() {
+    this.ctx = null;
+    this.muted = false;
+    this.engineOsc = null;
+    this.engineGain = null;
+    this.windNoise = null;
+    this.windGain = null;
+  }
+
+  init() {
+    if (this.ctx) return;
+    const AudioContext = window.AudioContext || window.webkitAudioContext;
+    this.ctx = new AudioContext();
+
+    // Engine synth
+    this.engineOsc = this.ctx.createOscillator();
+    this.engineOsc.type = 'sawtooth';
+    this.engineGain = this.ctx.createGain();
+    this.engineGain.gain.value = 0;
+    
+    // Lowpass filter for engine growl
+    const filter = this.ctx.createBiquadFilter();
+    filter.type = 'lowpass';
+    filter.frequency.value = 600;
+
+    this.engineOsc.connect(filter);
+    filter.connect(this.engineGain);
+    this.engineGain.connect(this.ctx.destination);
+    this.engineOsc.start();
+
+    // Wind noise
+    const bufferSize = this.ctx.sampleRate * 2;
+    const noiseBuffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
+    const output = noiseBuffer.getChannelData(0);
+    for (let i = 0; i < bufferSize; i++) {
+      output[i] = Math.random() * 2 - 1;
+    }
+
+    this.windNoise = this.ctx.createBufferSource();
+    this.windNoise.buffer = noiseBuffer;
+    this.windNoise.loop = true;
+
+    const windFilter = this.ctx.createBiquadFilter();
+    windFilter.type = 'bandpass';
+    windFilter.frequency.value = 800;
+
+    this.windGain = this.ctx.createGain();
+    this.windGain.gain.value = 0;
+
+    this.windNoise.connect(windFilter);
+    windFilter.connect(this.windGain);
+    this.windGain.connect(this.ctx.destination);
+    this.windNoise.start();
+  }
+
+  updateEngine(speedRatio, revs) {
+    if (!this.ctx || this.muted) return;
+    const baseFreq = 60 + revs * 180 + speedRatio * 80;
+    this.engineOsc.frequency.setTargetAtTime(baseFreq, this.ctx.currentTime, 0.05);
+    this.engineGain.gain.setTargetAtTime(0.08 + revs * 0.12, this.ctx.currentTime, 0.05);
+    this.windGain.gain.setTargetAtTime(speedRatio * 0.15, this.ctx.currentTime, 0.1);
+  }
+
+  stopEngine() {
+    if (this.engineGain) this.engineGain.gain.value = 0;
+    if (this.windGain) this.windGain.gain.value = 0;
+  }
+
+  playCrash() {
+    if (!this.ctx || this.muted) return;
+    const osc = this.ctx.createOscillator();
+    const gain = this.ctx.createGain();
+    osc.type = 'square';
+    osc.frequency.setValueAtTime(120, this.ctx.currentTime);
+    osc.frequency.exponentialRampToValueAtTime(30, this.ctx.currentTime + 0.4);
+    gain.gain.setValueAtTime(0.3, this.ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.4);
+    osc.connect(gain);
+    gain.connect(this.ctx.destination);
+    osc.start();
+    osc.stop(this.ctx.currentTime + 0.4);
+  }
+
+  playNitro() {
+    if (!this.ctx || this.muted) return;
+    const osc = this.ctx.createOscillator();
+    const gain = this.ctx.createGain();
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(300, this.ctx.currentTime);
+    osc.frequency.exponentialRampToValueAtTime(800, this.ctx.currentTime + 0.5);
+    gain.gain.setValueAtTime(0.2, this.ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.5);
+    osc.connect(gain);
+    gain.connect(this.ctx.destination);
+    osc.start();
+    osc.stop(this.ctx.currentTime + 0.5);
+  }
+
+  toggleSound() {
+    this.muted = !this.muted;
+    if (this.muted) this.stopEngine();
+    return this.muted;
+  }
+}
+
+const audio = new AudioEngine();
+
+// --- GAME ENGINE & PSEUDO-3D RENDERER ---
+class Game {
+  constructor() {
+    this.canvas = document.getElementById('game');
+    this.ctx = this.canvas.getContext('2d');
+    
+    // Track State
+    this.selectedMap = MAP_MODES[0];
+    this.difficulty = 'medium';
+    this.segments = [];
+    this.trackLength = 0;
+    this.segmentLength = 200;
+    this.rumbleLength = 3;
+    this.lanes = 3;
+    this.roadWidth = 2000;
+    this.cameraHeight = 1000;
+    this.drawDistance = 300;
+    this.fieldOfView = 100;
+    this.cameraDepth = 1 / Math.tan((this.fieldOfView / 2) * Math.PI / 180);
+
+    // Player State
+    this.playerX = 0;
+    this.playerZ = 0;
+    this.speed = 0;
+    this.maxSpeed = 280; // km/h
+    this.accel = 120;
+    this.breaking = -180;
+    this.decel = -40;
+    this.offRoadDecel = -120;
+    this.offRoadLimit = 120;
+    this.health = 100;
+    this.nitro = 100;
+    this.isNitro = false;
+    this.lap = 1;
+    this.totalLaps = 2;
+    this.score = 0;
+    this.startTime = 0;
+    this.elapsedTime = 0;
+
+    // AI & Traffic
+    this.rivals = [];
+    this.traffic = [];
+    this.particles = [];
+    this.lightningTimer = 0;
+    this.flashAlpha = 0;
+
+    // Game Loop State
+    this.state = 'MENU'; // MENU, COUNTDOWN, RACING, GAMEOVER
+    this.keys = {};
+    this.topScore = parseInt(localStorage.getItem('roadrush_top_score') || '0', 10);
+
+    this.initUI();
+    this.resizeCanvas();
+    window.addEventListener('resize', () => this.resizeCanvas());
+    this.bindInputs();
+
+    requestAnimationFrame((time) => this.loop(time));
+  }
+
+  resizeCanvas() {
+    this.width = this.canvas.width = this.canvas.parentElement.clientWidth;
+    this.height = this.canvas.height = this.canvas.parentElement.clientHeight;
+  }
+
+  initUI() {
+    document.getElementById('topScore').innerText = `${this.topScore.toLocaleString()} PTS`;
+
+    // Render Map Selector Cards
+    const grid = document.getElementById('mapGrid');
+    grid.innerHTML = MAP_MODES.map((m, idx) => `
+      <div class="map-card ${idx === 0 ? 'selected' : ''}" data-id="${m.id}">
+        <div class="map-card-bg" style="background:${m.bgCircle}"></div>
+        <span class="map-card-badge">${m.badge}</span>
+        <div>
+          <div class="map-card-title">${m.name}</div>
+          <div class="map-card-desc">${m.description}</div>
+        </div>
+        <div class="map-card-stats">
+          <div>SURFACE<strong>${m.weather.toUpperCase()}</strong></div>
+          <div>GRIP<strong>${Math.round(m.grip * 100)}%</strong></div>
+          <div>DIFF<strong>${m.difficulty}</strong></div>
+        </div>
+      </div>
+    `).join('');
+
+    // Map Card Click Handler
+    grid.addEventListener('click', (e) => {
+      const card = e.target.closest('.map-card');
+      if (!card) return;
+      document.querySelectorAll('.map-card').forEach(c => c.classList.remove('selected'));
+      card.classList.add('selected');
+      this.selectedMap = MAP_MODES.find(m => m.id === card.dataset.id);
+    });
+
+    // Difficulty buttons
+    document.querySelectorAll('.diff-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.diff-btn').forEach(b => b.classList.remove('selected'));
+        btn.classList.add('selected');
+        this.difficulty = btn.dataset.diff;
+      });
+    });
+
+    // Start Button
+    document.getElementById('startBtn').addEventListener('click', () => {
+      audio.init();
+      this.startRace();
+    });
+
+    // Retry / Return
+    document.getElementById('retryBtn').addEventListener('click', () => this.startRace());
+    document.getElementById('menuReturnBtn').addEventListener('click', () => {
+      document.getElementById('resultsScreen').hidden = true;
+      document.getElementById('menuScreen').hidden = false;
+      this.state = 'MENU';
+    });
+
+    // Sound Toggle Button
+    document.getElementById('soundBtn').addEventListener('click', () => {
+      const isMuted = audio.toggleSound();
+      document.getElementById('soundBtn').classList.toggle('muted', isMuted);
+    });
+  }
+
+  bindInputs() {
+    window.addEventListener('keydown', (e) => {
+      this.keys[e.code] = true;
+      if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Space'].includes(e.code)) {
+        e.preventDefault();
+      }
+    });
+
+    window.addEventListener('keyup', (e) => {
+      this.keys[e.code] = false;
+    });
+
+    // Mobile touch controls
+    const bindTouch = (id, code) => {
+      const btn = document.getElementById(id);
+      if (!btn) return;
+      btn.addEventListener('touchstart', (e) => { e.preventDefault(); this.keys[code] = true; });
+      btn.addEventListener('touchend', (e) => { e.preventDefault(); this.keys[code] = false; });
+    };
+
+    bindTouch('btnLeft', 'ArrowLeft');
+    bindTouch('btnRight', 'ArrowRight');
+    bindTouch('btnGas', 'ArrowUp');
+    bindTouch('btnBrake', 'ArrowDown');
+    bindTouch('btnNitro', 'Space');
+  }
+
+  // --- TRACK GENERATOR ---
+  buildTrack() {
+    this.segments = [];
+
+    const addSegment = (curve, hill) => {
+      const n = this.segments.length;
+      this.segments.push({
+        index: n,
+        p1: { world: { y: this.lastY(), z: n * this.segmentLength }, camera: {}, screen: {} },
+        p2: { world: { y: hill, z: (n + 1) * this.segmentLength }, camera: {}, screen: {} },
+        curve: curve,
+        sprites: [],
+        cars: []
+      });
+    };
+
+    const addRoad = (enter, hold, leave, curve, hill) => {
+      const startY = this.lastY();
+      const endY = startY + (hill * this.segmentLength);
+      const total = enter + hold + leave;
+
+      for (let n = 0; n < enter; n++) addSegment(this.easeIn(0, curve, n / enter), this.easeInOut(startY, endY, n / total));
+      for (let n = 0; n < hold; n++) addSegment(curve, this.easeInOut(startY, endY, (enter + n) / total));
+      for (let n = 0; n < leave; n++) addSegment(this.easeInOut(curve, 0, n / leave), this.easeInOut(startY, endY, (enter + hold + n) / total));
+    };
+
+    // Track Sections
+    addRoad(50, 50, 50, 0, 0); // Straight start
+    addRoad(40, 60, 40, 2, 20); // Curve Right + Hill
+    addRoad(60, 80, 60, -3, -15); // Long Left Curve
+    addRoad(40, 40, 40, 0, 30); // Steep Hill
+    addRoad(50, 70, 50, 4, -20); // Sharp Right
+    addRoad(40, 60, 40, -2, 0); // S-Bend Part 1
+    addRoad(40, 60, 40, 3, 10); // S-Bend Part 2
+    addRoad(60, 100, 60, 0, 0); // Final Straight
+
+    this.trackLength = this.segments.length * this.segmentLength;
+
+    // Add Scenery Sprites
+    for (let i = 20; i < this.segments.length - 20; i += 4 + Math.floor(Math.random() * 4)) {
+      const side = Math.random() > 0.5 ? 1 : -1;
+      this.segments[i].sprites.push({
+        type: this.selectedMap.sceneryType,
+        offset: side * (1.5 + Math.random() * 2)
+      });
+    }
+
+    // Populate Rivals & Traffic
+    this.rivals = [];
+    const names = ['BLAZE', 'VIPER', 'KIRA', 'REX', 'SHADOW', 'GHOST', 'ACE'];
+    const colors = ['#ff0055', '#00f0ff', '#ffcc00', '#a020f0', '#00ff66', '#ff6600', '#ffffff'];
+
+    for (let i = 0; i < 7; i++) {
+      this.rivals.push({
+        id: i,
+        name: names[i],
+        color: colors[i],
+        z: (i + 1) * (this.trackLength / 10),
+        x: (Math.random() * 1.4) - 0.7,
+        speed: 180 + Math.random() * 60,
+        rank: i + 2
+      });
+    }
+
+    this.traffic = [];
+    const trafficCount = Math.floor(15 * this.selectedMap.trafficDensity);
+    for (let i = 0; i < trafficCount; i++) {
+      this.traffic.push({
+        z: Math.random() * this.trackLength,
+        x: (Math.random() * 1.6) - 0.8,
+        speed: 90 + Math.random() * 50,
+        type: Math.random() > 0.4 ? 'car' : 'truck'
+      });
+    }
+  }
+
+  lastY() {
+    return this.segments.length === 0 ? 0 : this.segments[this.segments.length - 1].p2.world.y;
+  }
+
+  easeIn(a, b, grad) { return a + (b - a) * Math.pow(grad, 2); }
+  easeInOut(a, b, grad) { return a + (b - a) * (1 - Math.cos(grad * Math.PI)) / 2; }
+
+  // --- START RACE ---
+  startRace() {
+    document.getElementById('menuScreen').hidden = true;
+    document.getElementById('resultsScreen').hidden = true;
+    document.getElementById('hud').hidden = false;
+
+    this.buildTrack();
+    this.playerX = 0;
+    this.playerZ = 0;
+    this.speed = 0;
+    this.health = 100;
+    this.nitro = 100;
+    this.lap = 1;
+    this.score = 0;
+    this.startTime = Date.now();
+    this.state = 'COUNTDOWN';
+
+    document.getElementById('mapProgressTitle').innerText = this.selectedMap.name.toUpperCase();
+    document.getElementById('hudTrackName').innerText = `${this.selectedMap.name} — ${this.selectedMap.tagline}`;
+
+    let count = 3;
+    const countBox = document.getElementById('countdownBox');
+    const countNum = document.getElementById('countNum');
+    countBox.hidden = false;
+    countNum.innerText = count;
+
+    const interval = setInterval(() => {
+      count--;
+      if (count > 0) {
+        countNum.innerText = count;
+      } else if (count === 0) {
+        countNum.innerText = 'GO!';
+      } else {
+        clearInterval(interval);
+        countBox.hidden = true;
+        this.state = 'RACING';
+      }
+    }, 900);
+  }
+
+  // --- MAIN GAME LOOP ---
+  loop(time) {
+    const dt = 1 / 60; // Fixed timestep frame
+    this.update(dt);
+    this.render();
+    requestAnimationFrame((time) => this.loop(time));
+  }
+
+  update(dt) {
+    if (this.state !== 'RACING' && this.state !== 'COUNTDOWN') return;
+
+    // Update Timer
+    if (this.state === 'RACING') {
+      this.elapsedTime = Date.now() - this.startTime;
+      const mins = Math.floor(this.elapsedTime / 60000);
+      const secs = Math.floor((this.elapsedTime % 60000) / 1000);
+      const ms = Math.floor((this.elapsedTime % 1000) / 10);
+      document.getElementById('hudTime').innerText = 
+        `${mins.toString().padStart(2,'0')}:${secs.toString().padStart(2,'0')}.${ms.toString().padStart(2,'0')}`;
+    }
+
+    // Input Handling
+    const isUp = this.keys['ArrowUp'] || this.keys['KeyW'];
+    const isDown = this.keys['ArrowDown'] || this.keys['KeyS'];
+    const isLeft = this.keys['ArrowLeft'] || this.keys['KeyA'];
+    const isRight = this.keys['ArrowRight'] || this.keys['KeyD'];
+    const isNitro = (this.keys['Space'] || this.keys['ShiftLeft']) && this.nitro > 5;
+
+    // Speed & Acceleration Logic
+    const grip = this.selectedMap.grip;
+    let targetMaxSpeed = this.maxSpeed;
+
+    if (isNitro && isUp) {
+      targetMaxSpeed += 60;
+      this.nitro = Math.max(0, this.nitro - dt * 25);
+      if (!this.isNitro) {
+        audio.playNitro();
+        this.isNitro = true;
+      }
+    } else {
+      this.isNitro = false;
+      if (this.nitro < 100) this.nitro += dt * 5; // Recharge nitro
+    }
+
+    // Acceleration
+    if (isUp) {
+      this.speed += (this.accel * (isNitro ? 1.8 : 1.0)) * dt;
+    } else if (isDown) {
+      this.speed += this.breaking * dt;
+    } else {
+      this.speed += this.decel * dt;
+    }
+
+    // Off-road slowdown
+    if ((this.playerX < -1 || this.playerX > 1) && this.speed > this.offRoadLimit) {
+      this.speed += this.offRoadDecel * dt;
+    }
+
+    this.speed = Math.max(0, Math.min(this.speed, targetMaxSpeed));
+
+    // Steering & Grip Physics
+    const speedRatio = this.speed / this.maxSpeed;
+    if (this.speed > 0) {
+      const steerPower = 2.2 * grip;
+      if (isLeft) this.playerX -= steerPower * dt * speedRatio;
+      if (isRight) this.playerX += steerPower * dt * speedRatio;
+    }
+
+    // Centrifugal force on curves
+    const playerSegment = this.getSegment(this.playerZ);
+    this.playerX -= (playerSegment.curve * speedRatio * 1.5 * (2 - grip)) * dt;
+    this.playerX = Math.max(-2, Math.min(2, this.playerX));
+
+    // Advance Player Position
+    this.playerZ += this.speed * 100 * dt;
+
+    // Lap Completion
+    if (this.playerZ >= this.trackLength) {
+      this.playerZ -= this.trackLength;
+      this.lap++;
+      if (this.lap > this.totalLaps) {
+        this.finishRace();
+        return;
+      }
+    }
+
+    // Audio Engine Sound
+    const revs = (this.speed % 60) / 60;
+    audio.updateEngine(speedRatio, revs);
+
+    // Update AI Rivals
+    this.rivals.forEach(r => {
+      r.z += r.speed * 100 * dt;
+      if (r.z >= this.trackLength) r.z -= this.trackLength;
+
+      // Simple Rival Collision
+      if (Math.abs(r.z - this.playerZ) < 200 && Math.abs(r.x - this.playerX) < 0.4) {
+        this.handleCollision();
+      }
+    });
+
+    // Update Traffic Vehicles
+    this.traffic.forEach(t => {
+      t.z += t.speed * 100 * dt;
+      if (t.z >= this.trackLength) t.z -= this.trackLength;
+
+      if (Math.abs(t.z - this.playerZ) < 250 && Math.abs(t.x - this.playerX) < 0.35) {
+        this.handleCollision();
+      }
+    });
+
+    // Calculate Rank
+    const totalDist = (this.lap - 1) * this.trackLength + this.playerZ;
+    let rank = 1;
+    this.rivals.forEach(r => {
+      const rDist = (this.lap - 1) * this.trackLength + r.z;
+      if (rDist > totalDist) rank++;
+    });
+
+    // Score Generation
+    if (this.speed > 100) this.score += Math.floor((this.speed / 10) * dt * 60);
+
+    // Update HUD Elements
+    this.updateHUD(rank);
+  }
+
+  handleCollision() {
+    if (this.speed > 80) {
+      this.speed *= 0.4;
+      this.health = Math.max(0, this.health - 18);
+      audio.playCrash();
+      
+      if (this.health <= 0) {
+        this.finishRace(true);
+      }
+    }
+  }
+
+  getSegment(z) {
+    return this.segments[Math.floor(z / this.segmentLength) % this.segments.length];
+  }
+
+  updateHUD(rank) {
+    document.getElementById('hudSpeed').innerText = Math.floor(this.speed);
+    document.getElementById('hudRank').innerHTML = `${rank}<small>/8</small>`;
+    document.getElementById('hudLap').innerText = `LAP ${Math.min(this.lap, this.totalLaps)}/${this.totalLaps}`;
+    document.getElementById('hudScore').innerText = `PTS ${this.score.toLocaleString()}`;
+
+    // Progress Bar
+    const progress = (this.playerZ / this.trackLength) * 100;
+    document.getElementById('progressBar').style.width = `${progress}%`;
+
+    // Gear Indicator
+    const gear = Math.min(6, Math.floor(this.speed / 50) + 1);
+    const gears = ['1ST', '2ND', '3RD', '4TH', '5TH', '6TH'];
+    document.getElementById('hudGear').innerText = gears[gear - 1];
+
+    // Rev Bars
+    const revs = Math.floor(((this.speed % 50) / 50) * 10);
+    const revBars = document.querySelectorAll('#revBars i');
+    revBars.forEach((bar, idx) => {
+      bar.className = idx < revs ? (idx >= 7 ? 'on red' : 'on') : '';
+    });
+
+    // Vitals
+    document.getElementById('healthVal').innerText = `${Math.round(this.health)}%`;
+    document.getElementById('healthFill').style.width = `${this.health}%`;
+    document.getElementById('healthMeter').classList.toggle('low', this.health < 30);
+
+    document.getElementById('nitroVal').innerText = `${Math.round(this.nitro)}%`;
+    document.getElementById('nitroFill').style.width = `${this.nitro}%`;
+  }
+
+  finishRace(crashed = false) {
+    this.state = 'GAMEOVER';
+    audio.stopEngine();
+
+    // Final Rank calculation
+    let rank = 1;
+    this.rivals.forEach(r => { if (r.z > this.playerZ) rank++; });
+
+    const rankTitles = ['1st', '2nd', '3rd', '4th', '5th', '6th', '7th', '8th'];
+    const rankStr = crashed ? 'DNF' : rankTitles[rank - 1];
+
+    document.getElementById('resRank').innerText = rankStr;
+    document.getElementById('resTitle').innerText = crashed ? 'BIKE DESTROYED!' : (rank <= 3 ? 'PODIUM FINISH!' : 'RACE COMPLETE');
+    document.getElementById('resTrack').innerText = this.selectedMap.name;
+    
+    const mins = Math.floor(this.elapsedTime / 60000);
+    const secs = Math.floor((this.elapsedTime % 60000) / 1000);
+    document.getElementById('resTime').innerText = `${mins}:${secs.toString().padStart(2,'0')}`;
+    document.getElementById('resSpeed').innerText = `${Math.floor(this.maxSpeed)} KM/H`;
+    document.getElementById('resScore').innerText = this.score.toLocaleString();
+
+    if (this.score > this.topScore) {
+      this.topScore = this.score;
+      localStorage.setItem('roadrush_top_score', this.topScore);
+      document.getElementById('topScore').innerText = `${this.topScore.toLocaleString()} PTS`;
+    }
+
+    document.getElementById('hud').hidden = true;
+    document.getElementById('resultsScreen').hidden = false;
+  }
+
+  // --- RENDERING ENGINE ---
+  render() {
+    this.ctx.clearRect(0, 0, this.width, this.height);
+
+    // 1. Draw Sky & Background
+    this.renderSky();
+
+    // 2. Draw Weather Effects (Rain / Snow / Dust)
+    this.renderWeatherBg();
+
+    // 3. Render Pseudo-3D Road
+    const baseSegment = this.getSegment(this.playerZ);
+    const baseIndex = baseSegment.index;
+    let maxy = this.height;
+    let x = 0;
+    let dx = -(baseSegment.curve * (this.playerZ % this.segmentLength) / this.segmentLength);
+
+    for (let n = 0; n < this.drawDistance; n++) {
+      const segment = this.segments[(baseIndex + n) % this.segments.length];
+      const looped = segment.index < baseIndex;
+      const cameraZ = this.playerZ - (looped ? this.trackLength : 0);
+
+      this.project(segment.p1, (this.playerX * this.roadWidth) - x, this.cameraHeight, cameraZ);
+      this.project(segment.p2, (this.playerX * this.roadWidth) - x - dx, this.cameraHeight, cameraZ);
+
+      x += dx;
+      dx += segment.curve;
+
+      if (segment.p1.camera.z <= this.cameraDepth || segment.p2.screen.y >= maxy) continue;
+
+      this.renderSegment(segment);
+      maxy = segment.p2.screen.y;
+    }
+
+    // 4. Render Sprites, Traffic & Rivals (Back to Front)
+    for (let n = this.drawDistance - 1; n > 0; n--) {
+      const segment = this.segments[(baseIndex + n) % this.segments.length];
+
+      // Scenery Sprites
+      segment.sprites.forEach(sprite => {
+        this.renderSprite(sprite, segment);
+      });
+
+      // Traffic Vehicles
+      this.traffic.forEach(car => {
+        if (this.getSegment(car.z).index === segment.index) {
+          this.renderVehicle(car, segment, '#444855');
+        }
+      });
+
+      // AI Rivals
+      this.rivals.forEach(rival => {
+        if (this.getSegment(rival.z).index === segment.index) {
+          this.renderVehicle(rival, segment, rival.color, true);
+        }
+      });
+    }
+
+    // 5. Draw Player Motorcycle
+    this.renderPlayerBike();
+
+    // 6. Foreground Weather Particle Overlay
+    this.renderWeatherFg();
+  }
+
+  project(p, cameraX, cameraY, cameraZ) {
+    p.camera.x = (p.world.x || 0) - cameraX;
+    p.camera.y = (p.world.y || 0) - cameraY;
+    p.camera.z = (p.world.z || 0) - cameraZ;
+
+    p.screen.scale = this.cameraDepth / p.camera.z;
+    p.screen.x = Math.round((this.width / 2) + (p.screen.scale * p.camera.x * this.width / 2));
+    p.screen.y = Math.round((this.height / 2) - (p.screen.scale * p.camera.y * this.height / 2));
+    p.screen.w = Math.round(p.screen.scale * this.roadWidth * this.width / 2);
+  }
+
+  renderSky() {
+    const map = this.selectedMap;
+    const grad = this.ctx.createLinearGradient(0, 0, 0, this.height * 0.55);
+    map.skyGradient.forEach((color, i) => {
+      grad.addColorStop(i / (map.skyGradient.length - 1), color);
+    });
+
+    this.ctx.fillStyle = grad;
+    this.ctx.fillRect(0, 0, this.width, this.height);
+
+    // Sun / Moon rendering
+    if (map.sunColor) {
+      this.ctx.save();
+      this.ctx.fillStyle = map.sunColor;
+      this.ctx.shadowColor = map.sunColor;
+      this.ctx.shadowBlur = 40;
+      this.ctx.beginPath();
+      this.ctx.arc(this.width * 0.5, this.height * 0.32, 45, 0, Math.PI * 2);
+      this.ctx.fill();
+      this.ctx.restore();
+    }
+
+    // Ground horizon fill
+    this.ctx.fillStyle = map.groundColor;
+    this.ctx.fillRect(0, this.height * 0.5, this.width, this.height * 0.5);
+  }
+
+  renderSegment(segment) {
+    const map = this.selectedMap;
+    const p1 = segment.p1.screen;
+    const p2 = segment.p2.screen;
+
+    // Grass / Terrain
+    this.ctx.fillStyle = map.groundColor;
+    this.ctx.fillRect(0, p2.y, this.width, p1.y - p2.y);
+
+    // Rumble Strip Width
+    const r1 = p1.w * 0.15;
+    const r2 = p2.w * 0.15;
+
+    // Rumble Strips
+    const isOdd = Math.floor(segment.index / this.rumbleLength) % 2 === 0;
+    this.ctx.fillStyle = isOdd ? map.rumble1 : map.rumble2;
+    this.polygon(p1.x - p1.w - r1, p1.y, p1.x - p1.w, p1.y, p2.x - p2.w, p2.y, p2.x - p2.w - r2, p2.y);
+    this.polygon(p1.x + p1.w, p1.y, p1.x + p1.w + r1, p1.y, p2.x + p2.w + r2, p2.y, p2.x + p2.w, p2.y);
+
+    // Main Asphalt Road
+    this.ctx.fillStyle = map.asphaltColor;
+    this.polygon(p1.x - p1.w, p1.y, p1.x + p1.w, p1.y, p2.x + p2.w, p2.y, p2.x - p2.w, p2.y);
+
+    // Center Lane Markings
+    if (isOdd) {
+      this.ctx.fillStyle = map.laneColor;
+      const lw1 = p1.w * 0.03;
+      const lw2 = p2.w * 0.03;
+      this.polygon(p1.x - lw1, p1.y, p1.x + lw1, p1.y, p2.x + lw2, p2.y, p2.x - lw2, p2.y);
+    }
+  }
+
+  polygon(x1, y1, x2, y2, x3, y3, x4, y4) {
+    this.ctx.beginPath();
+    this.ctx.moveTo(x1, y1);
+    this.ctx.lineTo(x2, y2);
+    this.ctx.lineTo(x3, y3);
+    this.ctx.lineTo(x4, y4);
+    this.ctx.closePath();
+    this.ctx.fill();
+  }
+
+  renderSprite(sprite, segment) {
+    const p = segment.p1.screen;
+    const scale = p.scale;
+    const spriteX = p.x + (scale * sprite.offset * this.roadWidth * this.width / 2);
+    const spriteY = p.y;
+    const size = scale * 1200 * (this.width / 800);
+
+    this.ctx.save();
+    this.ctx.translate(spriteX, spriteY);
+
+    if (sprite.type === 'palm') {
+      // Palm Tree
+      this.ctx.fillStyle = '#5c4033';
+      this.ctx.fillRect(-size * 0.08, -size, size * 0.16, size);
+      this.ctx.fillStyle = '#2d8a4e';
+      for (let i = 0; i < 5; i++) {
+        this.ctx.beginPath();
+        this.ctx.arc((i - 2) * size * 0.25, -size, size * 0.3, 0, Math.PI);
+        this.ctx.fill();
+      }
+    } else if (sprite.type === 'cyber') {
+      // Cyber Billboard
+      this.ctx.fillStyle = '#111625';
+      this.ctx.fillRect(-size * 0.3, -size * 1.2, size * 0.6, size * 1.2);
+      this.ctx.fillStyle = '#00f0ff';
+      this.ctx.shadowColor = '#00f0ff';
+      this.ctx.shadowBlur = 15;
+      this.ctx.fillRect(-size * 0.25, -size * 1.15, size * 0.5, size * 0.6);
+    } else if (sprite.type === 'canyon') {
+      // Red Rock Cacti
+      this.ctx.fillStyle = '#2e5a36';
+      this.ctx.fillRect(-size * 0.08, -size * 0.9, size * 0.16, size * 0.9);
+      this.ctx.fillRect(-size * 0.25, -size * 0.6, size * 0.5, size * 0.1);
+    } else if (sprite.type === 'pine') {
+      // Snow Pine Tree
+      this.ctx.fillStyle = '#1b3b2b';
+      this.ctx.beginPath();
+      this.ctx.moveTo(0, -size * 1.2);
+      this.ctx.lineTo(-size * 0.4, 0);
+      this.ctx.lineTo(size * 0.4, 0);
+      this.ctx.fill();
+      this.ctx.fillStyle = '#eef5fc';
+      this.ctx.fillRect(-size * 0.3, -size * 0.4, size * 0.6, size * 0.08);
+    } else {
+      // Dead Tree / Dark Pillar
+      this.ctx.fillStyle = '#15171c';
+      this.ctx.fillRect(-size * 0.06, -size, size * 0.12, size);
+    }
+
+    this.ctx.restore();
+  }
+
+  renderVehicle(v, segment, color, isRival = false) {
+    const p = segment.p1.screen;
+    const scale = p.scale;
+    const vX = p.x + (scale * (v.x - this.playerX) * this.roadWidth * this.width / 2);
+    const vY = p.y;
+    const size = scale * 1000 * (this.width / 800);
+
+    this.ctx.save();
+    this.ctx.translate(vX, vY);
+
+    if (isRival) {
+      // Rival Motorcycle
+      this.ctx.fillStyle = color;
+      this.ctx.fillRect(-size * 0.12, -size * 0.5, size * 0.24, size * 0.5);
+      // Rider Helmet
+      this.ctx.fillStyle = '#ffffff';
+      this.ctx.beginPath();
+      this.ctx.arc(0, -size * 0.55, size * 0.1, 0, Math.PI * 2);
+      this.ctx.fill();
+    } else {
+      // Traffic Car / Truck
+      this.ctx.fillStyle = color;
+      this.ctx.fillRect(-size * 0.25, -size * 0.4, size * 0.5, size * 0.4);
+      this.ctx.fillStyle = '#ff3333'; // Taillights
+      this.ctx.fillRect(-size * 0.22, -size * 0.35, size * 0.1, size * 0.08);
+      this.ctx.fillRect(size * 0.12, -size * 0.35, size * 0.1, size * 0.08);
+    }
+
+    this.ctx.restore();
+  }
+
+  renderPlayerBike() {
+    const cx = this.width / 2;
+    const cy = this.height - 40;
+    const isSteering = (this.keys['ArrowLeft'] || this.keys['KeyA']) ? -1 : (this.keys['ArrowRight'] || this.keys['KeyD']) ? 1 : 0;
+
+    this.ctx.save();
+    this.ctx.translate(cx, cy);
+
+    // Lean Effect on Steering
+    this.ctx.rotate(isSteering * 0.12);
+
+    // Bike Body Base
+    this.ctx.fillStyle = '#111';
+    this.ctx.fillRect(-18, -60, 36, 60);
+
+    // Rear Tire
+    this.ctx.fillStyle = '#222';
+    this.ctx.fillRect(-14, -25, 28, 30);
+
+    // Exhaust Nitro Flame Effect
+    if (this.isNitro) {
+      this.ctx.fillStyle = '#00f0ff';
+      this.ctx.shadowColor = '#00f0ff';
+      this.ctx.shadowBlur = 20;
+      this.ctx.beginPath();
+      this.ctx.moveTo(-8, 5);
+      this.ctx.lineTo(0, 35 + Math.random() * 15);
+      this.ctx.lineTo(8, 5);
+      this.ctx.fill();
+    }
+
+    // Bike Fairing / Bodywork
+    this.ctx.fillStyle = varColor('--acid');
+    this.ctx.fillRect(-22, -85, 44, 40);
+
+    // Rider Jacket & Helmet
+    this.ctx.fillStyle = '#1c1e24';
+    this.ctx.fillRect(-26, -110, 52, 35);
+
+    // Helmet
+    this.ctx.fillStyle = '#ffffff';
+    this.ctx.beginPath();
+    this.ctx.arc(0, -120, 16, 0, Math.PI * 2);
+    this.ctx.fill();
+
+    // Visor
+    this.ctx.fillStyle = '#00f0ff';
+    this.ctx.fillRect(-10, -124, 20, 7);
+
+    this.ctx.restore();
+  }
+
+  renderWeatherBg() {
+    if (this.selectedMap.weather === 'thunder') {
+      this.lightningTimer += 0.016;
+      if (Math.random() < 0.005) {
+        this.flashAlpha = 0.8;
+      }
+      if (this.flashAlpha > 0) {
+        this.ctx.fillStyle = `rgba(255, 255, 255, ${this.flashAlpha})`;
+        this.ctx.fillRect(0, 0, this.width, this.height);
+        this.flashAlpha -= 0.05;
+      }
+    }
+  }
+
+  renderWeatherFg() {
+    const w = this.selectedMap.weather;
+    if (w === 'rain' || w === 'thunder') {
+      this.ctx.strokeStyle = 'rgba(255, 255, 255, 0.25)';
+      this.ctx.lineWidth = 1.5;
+      this.ctx.beginPath();
+      for (let i = 0; i < 40; i++) {
+        const rx = Math.random() * this.width;
+        const ry = Math.random() * this.height;
+        this.ctx.moveTo(rx, ry);
+        this.ctx.lineTo(rx - 10, ry + 25);
+      }
+      this.ctx.stroke();
+    } else if (w === 'snow') {
+      this.ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
+      for (let i = 0; i < 35; i++) {
+        const sx = Math.random() * this.width;
+        const sy = Math.random() * this.height;
+        this.ctx.beginPath();
+        this.ctx.arc(sx, sy, 2 + Math.random() * 2, 0, Math.PI * 2);
+        this.ctx.fill();
+      }
+    } else if (w === 'dust') {
+      this.ctx.fillStyle = 'rgba(226, 136, 53, 0.12)';
+      this.ctx.fillRect(0, 0, this.width, this.height);
+    }
+  }
+}
+
+function varColor(name) {
+  return getComputedStyle(document.documentElement).getPropertyValue(name).trim() || '#dcff58';
+}
+
+// Boot up game
+window.addEventListener('load', () => {
+  new Game();
+});
+</script>
+</body>
+</html>

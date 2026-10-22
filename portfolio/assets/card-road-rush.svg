@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="588" height="216" viewBox="0 0 588 216" fill="none" role="img" aria-label="Road Rush — Sunset &amp; Beyond">
+  <defs>
+    <linearGradient id="bg_roadrush" x1="0" y1="0" x2="588" y2="216" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#090d17"/>
+      <stop offset="100%" stop-color="#0d1424"/>
+    </linearGradient>
+    <radialGradient id="glow_roadrush" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(520 36) scale(220 140)">
+      <stop offset="0%" stop-color="#ff2a85" stop-opacity="0.16"/>
+      <stop offset="100%" stop-color="#ff2a85" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+
+  <rect x="0.75" y="0.75" width="586.5" height="214.5" rx="15" fill="url(#bg_roadrush)" stroke="#1e2a45" stroke-width="1.5"/>
+  <rect x="1.5" y="1.5" width="585" height="213" rx="14" fill="url(#glow_roadrush)"/>
+  <line x1="28" y1="1.5" x2="188" y2="1.5" stroke="#ff2a85" stroke-width="2.5"/>
+
+  <!-- Icon Box -->
+  <rect x="28" y="26" width="42" height="42" rx="10" fill="#2b0d1d" stroke="#ff2a85" stroke-opacity="0.5"/>
+  <g transform="translate(37, 35)">
+    <path d="M3 16l4-7h10l4 7H3Z" stroke="#ff2a85" stroke-width="1.8" stroke-linejoin="round"/><circle cx="7.5" cy="17" r="2.2" fill="#ff2a85"/><circle cx="16.5" cy="17" r="2.2" fill="#ff2a85"/>
+  </g>
+
+  <!-- Status Badge -->
+  <rect x="387" y="28" width="173" height="26" rx="13" fill="#2b0d1d" stroke="#ff2a85" stroke-opacity="0.55"/>
+  <text x="473.5" y="45" text-anchor="middle" fill="#ff2a85" font-size="10.5" font-weight="700" letter-spacing="0.6" font-family="'JetBrains Mono', 'SFMono-Regular', Consolas, monospace">5-BIOME ARCADE ENGINE</text>
+
+  <!-- Title & Description -->
+  <text x="28" y="96" fill="#f8fafc" font-size="20" font-weight="800" font-family="'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif">Road Rush — Sunset &amp; Beyond</text>
+  <text x="28" y="122" fill="#94a3b8" font-size="13" font-family="'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif">Zero-dependency pseudo-3D bike racer with 5 dynamic weather maps,</text>
+  <text x="28" y="142" fill="#94a3b8" font-size="13" font-family="'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif">Web Audio API sound synthesis, nitro boost &amp; mobile controls.</text>
+
+  <!-- Tech Chips -->
+  <rect x="28" y="164" width="85" height="26" rx="6" fill="#10182b" stroke="#22304d"/><text x="70.5" y="181" text-anchor="middle" fill="#cbd5e1" font-size="11" font-weight="600" font-family="'JetBrains Mono', 'SFMono-Regular', Consolas, monospace">Canvas 2D</text><rect x="121" y="164" width="85" height="26" rx="6" fill="#10182b" stroke="#22304d"/><text x="163.5" y="181" text-anchor="middle" fill="#cbd5e1" font-size="11" font-weight="600" font-family="'JetBrains Mono', 'SFMono-Regular', Consolas, monospace">Web Audio</text><rect x="214" y="164" width="68" height="26" rx="6" fill="#10182b" stroke="#22304d"/><text x="248.0" y="181" text-anchor="middle" fill="#cbd5e1" font-size="11" font-weight="600" font-family="'JetBrains Mono', 'SFMono-Regular', Consolas, monospace">ES6 JS</text><rect x="290" y="164" width="68" height="26" rx="6" fill="#10182b" stroke="#22304d"/><text x="324.0" y="181" text-anchor="middle" fill="#cbd5e1" font-size="11" font-weight="600" font-family="'JetBrains Mono', 'SFMono-Regular', Consolas, monospace">60 FPS</text>
+
+  <!-- Right Action Label -->
+  <text x="560" y="181" text-anchor="end" fill="#ff2a85" font-size="11.5" font-weight="700" font-family="'JetBrains Mono', 'SFMono-Regular', Consolas, monospace">EXPLORE REPO -&gt;</text>
+</svg>

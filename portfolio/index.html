@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#060911" />
+  <title>Althaf — Software Engineer &amp; Builder | Developer Portfolio</title>
+  <meta name="description" content="Developer portfolio and interactive GitHub Upgrade Studio for Althaf (@althaf786313) — Python, interactive web platforms, Manim/FFmpeg automation, and Canvas game engines." />
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+  <!-- TOP NAVIGATION -->
+  <header class="navbar">
+    <div class="container navbar-inner">
+      <a href="#" class="brand">
+        <span class="brand-mark">&gt;_</span>
+        <span>ALTHAF <span class="slash">//</span> DEV</span>
+      </a>
+
+      <nav class="nav-links" aria-label="Primary">
+        <a href="#projects">Projects</a>
+        <a href="#arcade">Play Road Rush</a>
+        <a href="#upgrade-studio">GitHub Upgrade Studio</a>
+        <a href="https://github.com/althaf786313" target="_blank" rel="noopener">GitHub ↗</a>
+      </nav>
+
+      <div class="nav-status">
+        <span class="pulse-dot"></span>
+        <span>BUILDING &amp; OPEN TO COLLABORATE</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- HERO SECTION -->
+  <main>
+    <section class="hero">
+      <div class="container hero-grid">
+        <div>
+          <div class="eyebrow">// SOFTWARE ENGINEER &amp; BUILDER • @ALTHAF786313</div>
+          <h1>
+            Building <span class="accent-cyan">interactive software</span> &amp;
+            <span class="accent-lime">automated systems</span> that ship.
+          </h1>
+          <p class="hero-lead">
+            Hi, I’m <strong>Althaf</strong>. I turn computer science fundamentals into fast, self-contained products — from browser-based Python IDEs running WebAssembly to automated Manim + FFmpeg video studios and 60fps HTML5 Canvas game engines.
+          </p>
+
+          <div class="btn-row">
+            <a href="#upgrade-studio" class="btn btn-primary">⚡ Open GitHub Upgrade Studio</a>
+            <a href="#arcade" class="btn btn-cyan" id="heroPlayBtn">▶ Play Road Rush Live</a>
+            <a href="https://github.com/althaf786313" target="_blank" rel="noopener" class="btn btn-ghost">GitHub Profile ↗</a>
+          </div>
+
+          <div class="hero-metrics">
+            <div class="metric-tile">
+              <strong>3 Shipped Apps</strong>
+              <span>BROWSER IDE • VIDEO STUDIO • ARCADE</span>
+            </div>
+            <div class="metric-tile">
+              <strong>237.4 KB</strong>
+              <span>CLEAN SOURCE CODE VOLUME</span>
+            </div>
+            <div class="metric-tile">
+              <strong>Py + Web</strong>
+              <span>FULL-STACK &amp; ZERO-DEP ENGINES</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- INTERACTIVE TERMINAL TELEMETRY -->
+        <div class="terminal-card" aria-label="Interactive developer terminal">
+          <div class="terminal-topbar">
+            <div class="win-dots">
+              <i style="background:#ff2a85"></i>
+              <i style="background:#ffb800"></i>
+              <i style="background:#00f59b"></i>
+            </div>
+            <span class="terminal-title">althaf@dev-hub:~/telemetry</span>
+          </div>
+          <div class="terminal-tabs" role="tablist" aria-label="Terminal commands">
+            <button class="cmd-btn active" data-cmd="whoami" type="button">$ whoami</button>
+            <button class="cmd-btn" data-cmd="projects" type="button">$ ls ./projects</button>
+            <button class="cmd-btn" data-cmd="stack" type="button">$ cat stack.json</button>
+            <button class="cmd-btn" data-cmd="pipeline" type="button">$ ./pip-studio --info</button>
+          </div>
+          <pre class="terminal-body" id="terminalOutput"></pre>
+        </div>
+      </div>
+    </section>
+
+    <!-- SHIPPED PROJECTS -->
+    <section class="section" id="projects">
+      <div class="container">
+        <div class="section-header">
+          <div>
+            <div class="eyebrow">01 // FEATURED BUILDS</div>
+            <h2>Shipped Engineering Projects</h2>
+            <p class="section-sub">Hands-on systems built end-to-end across browser runtimes, Python backends, and interactive graphics.</p>
+          </div>
+
+          <div class="filter-bar" role="group" aria-label="Filter projects">
+            <button class="filter-pill active" data-filter="all" type="button">All Builds (3)</button>
+            <button class="filter-pill" data-filter="web" type="button">Browser &amp; WASM</button>
+            <button class="filter-pill" data-filter="python" type="button">Python Full-Stack</button>
+            <button class="filter-pill" data-filter="game" type="button">Canvas Engine</button>
+          </div>
+        </div>
+
+        <div class="projects-grid">
+          <!-- PROJECT 1: PYTHON MASTERY HUB -->
+          <article class="project-card" data-category="web python">
+            <div>
+              <div class="project-top">
+                <span class="badge badge-cyan">LIVE ON GITHUB PAGES</span>
+                <span style="font-family:var(--font-mono);font-size:0.75rem;color:var(--muted)">122.7 KB</span>
+              </div>
+              <h3>Python Mastery Hub</h3>
+              <p>Dark-mode interactive Python learning platform uniting a structured 75-page ebook, 100+ hands-on projects, and in-browser code execution.</p>
+              <ul class="feature-list">
+                <li>Live side-by-side Python playground powered by Pyodide WASM + Skulpt fallback</li>
+                <li>Real-time Matplotlib chart rendering directly inside the browser</li>
+                <li>Includes AI Transcriber, Audio Classroom, Certificate &amp; ATS Resume Builder</li>
+              </ul>
+            </div>
+            <div>
+              <div class="chip-row">
+                <span class="chip">Python</span>
+                <span class="chip">Pyodide</span>
+                <span class="chip">Matplotlib</span>
+                <span class="chip">HTML5 / JS</span>
+              </div>
+              <div class="card-actions">
+                <a href="https://althaf786313.github.io/python-mastery-hub/" target="_blank" rel="noopener" class="btn btn-cyan btn-sm">Launch Live App ↗</a>
+                <a href="https://github.com/althaf786313/python-mastery-hub" target="_blank" rel="noopener" class="btn btn-ghost btn-sm">Source Code ↗</a>
+              </div>
+            </div>
+          </article>
+
+          <!-- PROJECT 2: PIP STUDIO -->
+          <article class="project-card" data-category="python">
+            <div>
+              <div class="project-top">
+                <span class="badge badge-lime">PYTHON FULL-STACK STUDIO</span>
+                <span style="font-family:var(--font-mono);font-size:0.75rem;color:var(--muted)">65.9 KB</span>
+              </div>
+              <h3>Pip Studio</h3>
+              <p>All-in-one animated video generation studio combining programmatic animation, offline neural TTS voiceover, and FFmpeg video rendering.</p>
+              <ul class="feature-list">
+                <li>Dual animation engines: Manim Pro scenes + custom Pillow Cartoon frame engine</li>
+                <li>Offline Piper TTS + Edge-TTS fallback with automated subtitle muxing</li>
+                <li>Flask REST API + AI Assistant JSON Bridge (<code>POST /api/generate</code>)</li>
+              </ul>
+            </div>
+            <div>
+              <div class="chip-row">
+                <span class="chip">Python 3.10+</span>
+                <span class="chip">Flask API</span>
+                <span class="chip">Manim</span>
+                <span class="chip">Piper TTS</span>
+                <span class="chip">FFmpeg</span>
+              </div>
+              <div class="card-actions">
+                <a href="https://github.com/althaf786313/pip-studio" target="_blank" rel="noopener" class="btn btn-primary btn-sm">Explore Repository ↗</a>
+              </div>
+            </div>
+          </article>
+
+          <!-- PROJECT 3: ROAD RUSH -->
+          <article class="project-card" data-category="game web">
+            <div>
+              <div class="project-top">
+                <span class="badge badge-pink">ZERO-DEP ARCADE ENGINE</span>
+                <span style="font-family:var(--font-mono);font-size:0.75rem;color:var(--muted)">54.5 KB</span>
+              </div>
+              <h3>Road Rush — Sunset &amp; Beyond</h3>
+              <p>Single-file pseudo-3D highway bike racing engine featuring 5 dynamic weather maps, custom physics, and procedural Web Audio sound synthesis.</p>
+              <ul class="feature-list">
+                <li>5 distinct biomes: Sunset Highway, Neon Cyber City, Desert Storm, Alpine Pass &amp; Midnight Thunder</li>
+                <li>Real-time Web Audio API RPM synthesizer &amp; wind noise (0 audio files)</li>
+                <li>Full HUD telemetry, N₂O boost physics &amp; desktop/mobile controls</li>
+              </ul>
+            </div>
+            <div>
+              <div class="chip-row">
+                <span class="chip">HTML5 Canvas</span>
+                <span class="chip">ES6 JavaScript</span>
+                <span class="chip">Web Audio API</span>
+                <span class="chip">60 FPS</span>
+              </div>
+              <div class="card-actions">
+                <a href="#arcade" class="btn btn-cyan btn-sm" id="cardPlayBtn">▶ Play Below</a>
+                <a href="./road-rush/index.html" target="_blank" rel="noopener" class="btn btn-ghost btn-sm">Fullscreen ↗</a>
+              </div>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- EMBEDDED PLAYABLE ROAD RUSH ARCADE -->
+    <section class="section" id="arcade">
+      <div class="container">
+        <div class="section-header">
+          <div>
+            <div class="eyebrow">02 // INTERACTIVE LIVE DEMO</div>
+            <h2>Road Rush — Embedded Browser Arcade</h2>
+            <p class="section-sub">Inspect the 5 track physics profiles below or launch the playable HTML5 Canvas + Web Audio build directly inside your browser.</p>
+          </div>
+          <div class="card-actions">
+            <button type="button" class="btn btn-primary btn-sm" id="launchArcadeBtn">▶ Launch Live Game</button>
+            <a href="./road-rush/index.html" target="_blank" rel="noopener" class="btn btn-ghost btn-sm">Open Fullscreen Tab ↗</a>
+          </div>
+        </div>
+
+        <div class="biome-strip" id="biomeStrip" role="tablist" aria-label="Track physics inspector"></div>
+        <div class="biome-readout" id="biomeReadout"></div>
+
+        <div class="arcade-shell">
+          <div class="arcade-cover" id="arcadeCover">
+            <img src="./assets/road-rush-banner.svg" alt="Road Rush Sunset and Beyond banner" />
+            <div class="card-actions">
+              <button type="button" class="btn btn-primary" id="coverLaunchBtn">▶ Start Road Rush In-Page</button>
+              <a href="./road-rush/index.html" target="_blank" rel="noopener" class="btn btn-cyan">Open Fullscreen ↗</a>
+            </div>
+          </div>
+          <iframe class="arcade-frame" id="arcadeFrame" title="Road Rush Playable Game" allow="autoplay"></iframe>
+        </div>
+      </div>
+    </section>
+
+    <!-- INTERACTIVE GITHUB PROFILE UPGRADE STUDIO -->
+    <section class="section" id="upgrade-studio">
+      <div class="container">
+        <div class="section-header">
+          <div>
+            <div class="eyebrow">03 // READY-TO-PUBLISH GITHUB KIT</div>
+            <h2>GitHub Profile Upgrade Studio (<code>@althaf786313</code>)</h2>
+            <p class="section-sub">Customize your links on the left — your GitHub Bio and complete Dark Neon <code>README.md</code> update live on the right ready to copy in 1 click.</p>
+          </div>
+          <div class="card-actions">
+            <button type="button" class="btn btn-primary btn-sm" id="topCopyReadmeBtn">📋 Copy Profile README.md</button>
+            <a href="https://github.com/new?name=althaf786313&description=My+GitHub+Profile+README&visibility=public" target="_blank" rel="noopener" class="btn btn-cyan btn-sm">Create althaf786313 Repo ↗</a>
+          </div>
+        </div>
+
+        <div class="studio-layout">
+          <!-- LEFT: LIVE CUSTOMIZER -->
+          <aside class="studio-sidebar">
+            <h3>Personalize Links &amp; Bio</h3>
+            <p class="hint">Leave placeholders as-is or plug in your handles — everything updates instantly.</p>
+
+            <div class="field">
+              <label for="inpName">Display Name</label>
+              <input id="inpName" type="text" value="Althaf" />
+            </div>
+
+            <div class="field">
+              <label for="inpPortfolio">Portfolio Website URL</label>
+              <input id="inpPortfolio" type="url" value="https://althaf786313.github.io/racing-game/portfolio/" />
+            </div>
+
+            <div class="field">
+              <label for="inpLinkedin">LinkedIn URL</label>
+              <input id="inpLinkedin" type="url" value="https://linkedin.com/in/YOUR-LINKEDIN-HANDLE" />
+            </div>
+
+            <div class="field">
+              <label for="inpEmail">Contact Email</label>
+              <input id="inpEmail" type="email" value="your.email@example.com" />
+            </div>
+
+            <div class="field">
+              <label for="inpX">X / Twitter URL</label>
+              <input id="inpX" type="url" value="https://x.com/YOUR-X-HANDLE" />
+            </div>
+
+            <div class="bio-box">
+              <div class="bio-box-header">
+                <span>GITHUB BIO (&lt;160 CHARS)</span>
+                <span id="bioCounter">0 / 160</span>
+              </div>
+              <p class="bio-text" id="bioPreviewText"></p>
+              <button type="button" class="btn btn-cyan btn-sm" style="width:100%" id="copyBioBtn">📋 Copy GitHub Bio</button>
+            </div>
+          </aside>
+
+          <!-- RIGHT: VISUAL PREVIEW + RAW MARKDOWN + REPO POLISH -->
+          <div class="studio-main">
+            <div class="studio-tabsbar">
+              <div class="tab-group" role="tablist">
+                <button type="button" class="tab-btn active" data-tab="preview">Visual GitHub Preview</button>
+                <button type="button" class="tab-btn" data-tab="markdown">Raw README.md</button>
+                <button type="button" class="tab-btn" data-tab="repos">All 4 Repos Polish Guide</button>
+              </div>
+              <button type="button" class="btn btn-primary btn-sm" id="barCopyReadmeBtn">📋 Copy README.md</button>
+            </div>
+
+            <!-- TAB 1: LIVE VISUAL PREVIEW -->
+            <div class="tab-panel" id="panel-preview">
+              <div class="gh-preview-canvas">
+                <div class="gh-preview-caption">
+                  <span>althaf786313 / README.md</span>
+                  <span>Dark Neon Developer Dashboard</span>
+                </div>
+
+                <img src="./assets/hero-banner.svg" alt="Hero Dashboard Banner" class="gh-svg-full" />
+
+                <div class="gh-badges-preview" id="liveBadgesPreview"></div>
+
+                <div style="margin:20px 0">
+                  <img src="./assets/telemetry-card.svg" alt="Live GitHub Telemetry" class="gh-svg-full" />
+                </div>
+
+                <div class="gh-cards-grid">
+                  <a href="https://althaf786313.github.io/python-mastery-hub/" target="_blank" rel="noopener">
+                    <img src="./assets/card-python-hub.svg" alt="Python Mastery Hub card" />
+                  </a>
+                  <a href="https://github.com/althaf786313/pip-studio" target="_blank" rel="noopener">
+                    <img src="./assets/card-pip-studio.svg" alt="Pip Studio card" />
+                  </a>
+                  <a href="#arcade">
+                    <img src="./assets/card-road-rush.svg" alt="Road Rush card" />
+                  </a>
+                  <a href="#top">
+                    <img src="./assets/card-portfolio.svg" alt="Developer Portfolio card" />
+                  </a>
+                </div>
+              </div>
+            </div>
+
+            <!-- TAB 2: RAW MARKDOWN -->
+            <div class="tab-panel" id="panel-markdown" hidden>
+              <textarea class="raw-code" id="readmeTextarea" readonly aria-label="Generated GitHub Profile README markdown"></textarea>
+            </div>
+
+            <!-- TAB 3: REPO METADATA CHEATSHEET -->
+            <div class="tab-panel" id="panel-repos" hidden>
+              <div class="repo-polish-list" id="repoPolishList"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="container footer-inner">
+      <span>Built for <strong>Althaf (@althaf786313)</strong> — Software Engineer &amp; Builder</span>
+      <span>Dark Neon Portfolio + Live Road Rush Arcade + GitHub Upgrade Studio</span>
+    </div>
+  </footer>
+
+  <div class="toast" id="toast" role="status" aria-live="polite">Copied to clipboard!</div>
+
+  <script src="./app.js"></script>
+</body>
+</html>
